@@ -88,7 +88,10 @@ All images will be saved in `outputs/`
 
 # (Optional) Filter out bad images using GPT-API
 
-Install the OpenAI client: `pip install openai`
+Install the OpenAI client: 
+```
+pip install openai
+```
 
 Edit the script: `shen_scripts/gpt_api_decide.py`
 
@@ -97,7 +100,7 @@ Edit the script: `shen_scripts/gpt_api_decide.py`
     client = openai.OpenAI(api_key="xxx")
     ```
 
-* Set your root directory: 
+* Set your root directory. For example: 
     ```
     root_dir = "/home/shenzhen/Relight_Projects/relighting/outputs"
     ```
@@ -116,7 +119,7 @@ Edit: `shen_scripts/prepare_img2img_turbo_data.py`
 * Set output directory (e.g.): `output_dir = "/home/shenzhen/Relight_Projects/img2img-turbo/data"`
 * Set relight type: `relight_type = "candlelight_1"`
 
-Run the script. It will
+Run the script. It will:
 * Format images into the structure required by Pix2Pix-Turbo
 * Automatically split into train/test
 * Skip any images listed in `invalid.txt` (if present)
@@ -143,8 +146,8 @@ Sample command:
 ```
 accelerate launch src/train_pix2pix_turbo.py \
     --pretrained_model_name_or_path="stabilityai/sd-turbo" \
-    --output_dir="/scratch1/shenzhen/img2img-turbo/output/pix2pix_turbo/candlelight_1" \
-    --dataset_folder="/scratch1/shenzhen/img2img-turbo/data/candlelight_1" \
+    --output_dir="/home/shenzhen/Relight_Projects/img2img-turbo/output/pix2pix_turbo/candlelight_1" \
+    --dataset_folder="/home/shenzhen/Relight_Projects/img2img-turbo/data/candlelight_1" \
     --resolution=512 \
     --train_batch_size=1 \
     --enable_xformers_memory_efficient_attention --viz_freq 25 \
