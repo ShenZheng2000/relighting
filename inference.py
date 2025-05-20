@@ -280,9 +280,11 @@ def main():
         depth_model = DepthPreprocessor.from_pretrained("LiheYoung/depth-anything-large-hf")
         use_v2 = False
 
-    for seed in range(args.num_seeds):
-        config = load_config(args)  # Reload in case your YAML sets defaults
+    for i in range(args.num_seeds):
+        seed = args.seed_offset + i
+        config = load_config(args)
         config.seed = seed
+        config.output_dir = f"{os.path.splitext(os.path.basename(args.exp_config))[0]}_seed{seed}"
 
         print(f"\n=== Running seed {seed} ===")
 

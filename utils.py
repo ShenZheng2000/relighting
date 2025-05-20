@@ -133,6 +133,7 @@ def parse_arguments():
     parser.add_argument("--relight_type", type=str, required=True, help="Specify relighting type")
     parser.add_argument("--gpu", type=int, required=True, help="GPU ID to use")
     parser.add_argument('--num_seeds', type=int, default=1)
+    parser.add_argument('--seed_offset', type=int, default=0, help='Starting seed value (default is 0)')
     return parser.parse_args()
 
 def load_config(args):

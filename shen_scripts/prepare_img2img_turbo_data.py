@@ -27,8 +27,10 @@ def create_json(num_images, prompt, output_path):
     print(f"Saved JSON to {output_path}")
 
 # Define the root input and output directories
-root_dir = "/home/shenzhen/Relight_Projects/relighting-comparison/outputs"
-output_dir = "/home/shenzhen/Relight_Projects/img2img-turbo/data/candlelight_1_may4"
+root_dir = "/home/shenzhen/Relight_Projects/relighting/outputs"
+relight_type = "candlelight_1"
+output_dir = "/home/shenzhen/Relight_Projects/img2img-turbo/data"
+output_dir = os.path.join(output_dir, relight_type)
 
 # Output subdirectories
 save_base_train_A = os.path.join(output_dir, "train_A")
@@ -45,7 +47,7 @@ valid_image_paths = []
 
 # Iterate over folder for image filtering and selection.
 for exp_folder in sorted(os.listdir(root_dir)):
-    subfolder = os.path.join(root_dir, exp_folder, "candlelight_1")
+    subfolder = os.path.join(root_dir, exp_folder, relight_type)
 
     if not os.path.isdir(subfolder):
         continue
