@@ -119,9 +119,9 @@ Edit: `shen_scripts/prepare_img2img_turbo_data.py`
 Run the script. It will
 * Format images into the structure required by Pix2Pix-Turbo
 * Automatically split into train/test
-* Skip any images listed in invalid.txt (if present)
+* Skip any images listed in `invalid.txt` (if present)
 
-# Setup Repo
+## Setup Repo
 ```
 git clone https://github.com/GaParmar/img2img-turbo
 cd img2img-turbo
@@ -137,8 +137,7 @@ pip install wandb
 pip install vision_aided_loss
 ```
 
-
-# Start Training 
+## Start Training 
 
 Sample command:
 ```
