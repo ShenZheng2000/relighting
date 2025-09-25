@@ -124,6 +124,30 @@ Run the script. It will:
 * Automatically split into train/test
 * Skip any images listed in `invalid.txt` (if present)
 
+## Example Dataset Structure
+```
+/data/candlelight_1_may4
+├── train_A
+│ ├── 0.png
+│ ├── 1.png
+│ └── ...
+├── train_B
+│ ├── 0.png
+│ ├── 1.png
+│ └── ...
+├── test_A
+│ ├── 0.png
+│ ├── 1.png
+│ └── ...
+├── test_B
+│ ├── 0.png
+│ ├── 1.png
+│ └── ...
+├── train_prompts.json
+└── test_prompts.json
+```
+
+
 ## Setup Repo
 ```
 git clone https://github.com/GaParmar/img2img-turbo
