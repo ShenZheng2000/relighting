@@ -83,6 +83,7 @@ def run_outpainting(subfolder_path, config, pipe_outpaint, outpaint_prompts, dep
     cfg_outpaint = config.cfg_outpaint
     num_inference_steps = config.num_inference_steps  # outpainting steps
     crop_to_foreground = config.crop_to_foreground
+    upper_crop = config.upper_crop  # Whether to keep upper half only for outpainting
 
     # Outpainting without rectangle (not fg mask) (base version).
     if not config.relight_image_only:
@@ -91,6 +92,7 @@ def run_outpainting(subfolder_path, config, pipe_outpaint, outpaint_prompts, dep
             apply_fg_mask=False,
             body_mask=body_mask,
             crop_to_foreground=crop_to_foreground,
+            upper_crop=upper_crop,
         )
         img_out_base_no = pipe_outpaint(
             prompt=base_prompt,
@@ -112,6 +114,7 @@ def run_outpainting(subfolder_path, config, pipe_outpaint, outpaint_prompts, dep
         apply_fg_mask=True, 
         body_mask=body_mask,
         crop_to_foreground=crop_to_foreground,
+        upper_crop=upper_crop,
     )
 
     img_out_relight = pipe_outpaint(

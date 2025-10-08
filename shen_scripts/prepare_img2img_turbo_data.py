@@ -3,6 +3,18 @@ import random
 from PIL import Image
 import json
 
+# Skip known bad images
+skip_list = {"Boden_Girl_Shorts_002.png", "Eres_women_swimwear_303.png"}
+
+# Define the root input and output directories
+root_dir = "/home/shenzhen/Relight_Projects/relighting/outputs"
+relight_type = "candlelight_1" # NOTE: change this everytime to avoid overwriting previous data
+output_dir = "/scratch/shenzhen/exp_10_2"
+output_dir = os.path.join(output_dir, relight_type)
+
+# Define prompt
+prompt = "Relit with warm candlelight in a dimly lit indoor setting, casting soft, flickering shadows and enveloping the subject in golden-orange tones to create a cozy, nostalgic mood."
+
 # Save cropped base and relight images
 def save_crops(image_paths, base_folder, relight_folder, start_idx=0, img_dim=784):
     idx = start_idx
@@ -25,12 +37,6 @@ def create_json(num_images, prompt, output_path):
     with open(output_path, "w") as f:
         json.dump(data, f, indent=4)
     print(f"Saved JSON to {output_path}")
-
-# Define the root input and output directories
-root_dir = "/home/shenzhen/Relight_Projects/relighting/outputs"
-relight_type = "candlelight_1"
-output_dir = "/home/shenzhen/Relight_Projects/img2img-turbo/data"
-output_dir = os.path.join(output_dir, relight_type)
 
 # Output subdirectories
 save_base_train_A = os.path.join(output_dir, "train_A")
@@ -60,7 +66,11 @@ for exp_folder in sorted(os.listdir(root_dir)):
             invalid_files = set(line.strip() for line in f.readlines())
 
     for fname in sorted(os.listdir(subfolder)):
-        if fname.lower().endswith(".png") and fname not in invalid_files:
+        if (
+            fname.lower().endswith(".png")
+            and fname not in invalid_files
+            and fname not in skip_list      # <-- add this line
+        ):
             valid_image_paths.append(os.path.join(subfolder, fname))
 
 # Shuffle and split 80/20 (NOTE: use seed=0 for reproducibility)
@@ -71,11 +81,8 @@ train_files = valid_image_paths[:split_idx]
 test_files = valid_image_paths[split_idx:]
 
 # # Save crops for train and test sets
-# save_crops(train_files, save_base_train_A, save_relight_train_B)
-# save_crops(test_files, save_base_test_A, save_relight_test_B)
-
-# Define prompt
-prompt = "Relit with warm candlelight in a dimly lit indoor setting, casting soft, flickering shadows and enveloping the subject in golden-orange tones to create a cozy, nostalgic mood."
+save_crops(train_files, save_base_train_A, save_relight_train_B)
+save_crops(test_files, save_base_test_A, save_relight_test_B)
 
 # Save JSONs
 num_train = len(train_files)

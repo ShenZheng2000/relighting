@@ -243,7 +243,7 @@ def process_body_mask(input_path, black_mask_output_path):
     print(f"Saved black foreground mask: {black_mask_output_path}")
     return black_mask_output_path
 
-def prepare_canvas_and_mask(image, target_width, target_height, apply_fg_mask=False, body_mask=None, crop_to_foreground=False):
+def prepare_canvas_and_mask(image, target_width, target_height, apply_fg_mask=False, body_mask=None, crop_to_foreground=False, upper_crop=False):
     '''
     Resizes and centers an image on a fixed-size canvas with black padding, optionally creating a matching mask.
     If crop_to_foreground is True and a body_mask is provided, the image is tightly cropped to the foreground.
@@ -256,6 +256,12 @@ def prepare_canvas_and_mask(image, target_width, target_height, apply_fg_mask=Fa
         bbox = inverted_mask.getbbox()
         if bbox is not None:
             left, upper, right, lower = bbox
+
+            if upper_crop:
+                # keep only top 50% height
+                mid = upper + (lower - upper) // 2
+                lower = mid
+
             image = image.crop((left, upper, right, lower))
             body_mask = body_mask.crop((left, upper, right, lower))
 

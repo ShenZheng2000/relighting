@@ -22,6 +22,7 @@ use_groundedsam2: false
 copy_fg_depth: false
 use_depthanythingv2: false
 crop_to_foreground: false
+upper_crop: false
 
 # Others
 # seed: 42
