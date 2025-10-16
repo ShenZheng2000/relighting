@@ -33,7 +33,7 @@ source .venv/bin/activate
 pip install -e ".[all]"
 ```
 
-# Run grounded sam2 to get body mask
+## Run grounded sam2 to get body mask
 
 Clone this repo: https://github.com/ShenZheng2000/Grounded-SAM-2
 
