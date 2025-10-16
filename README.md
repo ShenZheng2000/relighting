@@ -40,8 +40,10 @@ Edit `utils.py` and modify or add entries in `relighting_prompt_?`.
 For example:
 
 ```
-"candlelight_1": "Relit with warm candlelight in a dimly lit indoor setting, casting soft, flickering shadows and enveloping the subject in golden-orange tones to create a cozy, nostalgic mood."
-"goldenhour_1": "Relit with xxxxxxxxxxxxxxxxxxxxx"
+relighting_prompts_6 = {
+    "candlelight_1": "Relit with warm candlelight in a dimly lit indoor setting, casting soft, flickering shadows and enveloping the subject in golden-orange tones to create a cozy, nostalgic mood."
+    # add more as needed.
+}
 ```
 
 
@@ -51,6 +53,8 @@ Example:
 ```
 input_dir: /home/shenzhen/Datasets/dataset_with_garment_debug_100
 ```
+
+Randomly sampled 100 images folder name in `shen_scripts/debug_100.txt`
 
 Expected dataset folder structure:
 ```
@@ -122,7 +126,7 @@ Edit: `shen_scripts/prepare_img2img_turbo_data.py`
 Run the script. It will:
 * Format images into the structure required by Pix2Pix-Turbo
 * Automatically split into train/test
-* Skip any images listed in `invalid.txt` (if present)
+* Skip any images listed in `invalid.txt` or `skip_list` (if present)
 
 ## Example Dataset Structure
 ```

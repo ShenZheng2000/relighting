@@ -1,0 +1,6 @@
+
+input_dir: "/home/shenzhen/Datasets/dataset_with_garment_bigface_100"
+max_images: 100
+
+# NOTE: set this one to false
+upper_crop: false # upper_crop: false
