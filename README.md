@@ -69,21 +69,32 @@ dataset_with_garment_debug_100/
 └── Adsb_Women_Skirts_008/
 ```
 
+Alteratively, randomly sample 1000 images using `shen_scripts/random_sample.py` to get `dataset_with_garment_debug_1000`
+
+
 
 ## Prepare Config
-In your experiment config (e.g., `configs/exp_4_13.yaml`):
+In your experiment config (e.g., `configs/exp_10_9.yaml`):
 * Set `prompt_version` (default: 6)
 * Set `max_images` (2 for quick debugging, 100 or more for full experiments)
 
 
 ## Run inference 
 
-For example, to run relighting using `candlelight_1` across 2 GPUs (0 and 1), each running 2 seeds:
+For example, to run relighting using `candlelight_1` across 10 GPUs, each running 1 seeds:
 
 Run in terminal
 ```
-python inference.py --exp_config configs/exp_4_13.yaml --relight_type candlelight_1 --gpu 0 --seed_offset 0 --num_seeds 2 &
-python inference.py --exp_config configs/exp_4_13.yaml --relight_type candlelight_1 --gpu 1 --seed_offset 2 --num_seeds 2 &
+python inference.py --base_config configs/base_10_2.yaml --exp_config configs/exp_10_9.yaml --relight_type candlelight_1 --gpu 0 --seed_offset 0 --num_seeds 1 &
+python inference.py --base_config configs/base_10_2.yaml --exp_config configs/exp_10_9.yaml --relight_type candlelight_1 --gpu 1 --seed_offset 1 --num_seeds 1 &
+python inference.py --base_config configs/base_10_2.yaml --exp_config configs/exp_10_9.yaml --relight_type candlelight_1 --gpu 2 --seed_offset 2 --num_seeds 1 &
+python inference.py --base_config configs/base_10_2.yaml --exp_config configs/exp_10_9.yaml --relight_type candlelight_1 --gpu 3 --seed_offset 3 --num_seeds 1 &
+python inference.py --base_config configs/base_10_2.yaml --exp_config configs/exp_10_9.yaml --relight_type candlelight_1 --gpu 4 --seed_offset 4 --num_seeds 1 &
+python inference.py --base_config configs/base_10_2.yaml --exp_config configs/exp_10_9.yaml --relight_type candlelight_1 --gpu 5 --seed_offset 5 --num_seeds 1 &
+python inference.py --base_config configs/base_10_2.yaml --exp_config configs/exp_10_9.yaml --relight_type candlelight_1 --gpu 6 --seed_offset 6 --num_seeds 1 &
+python inference.py --base_config configs/base_10_2.yaml --exp_config configs/exp_10_9.yaml --relight_type candlelight_1 --gpu 7 --seed_offset 7 --num_seeds 1 &
+python inference.py --base_config configs/base_10_2.yaml --exp_config configs/exp_10_9.yaml --relight_type candlelight_1 --gpu 8 --seed_offset 8 --num_seeds 1 &
+python inference.py --base_config configs/base_10_2.yaml --exp_config configs/exp_10_9.yaml --relight_type candlelight_1 --gpu 9 --seed_offset 9 --num_seeds 1 &
 wait
 ```
 
