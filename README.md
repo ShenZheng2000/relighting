@@ -33,6 +33,12 @@ source .venv/bin/activate
 pip install -e ".[all]"
 ```
 
+# Run grounded sam2 to get body mask
+
+Clone this repo: https://github.com/ShenZheng2000/Grounded-SAM-2
+
+Install the env based on the instruction, setup path, and run `run.py` to get body mask in the dataset folder. 
+
 
 ## Specify relighting prompt
 Edit `utils.py` and modify or add entries in `relighting_prompt_?`. 
