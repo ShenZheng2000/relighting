@@ -33,67 +33,76 @@ skip_list = {
             "finisterre_menyulexwetsuits_004.png",
             "houseofcb_women_tops_181.png",
             "isabelle_quinn_women_sets_027.png",
-            "candlelight_1/kan_women_skirt_015.png",
-            "candlelight_1/Lagence_Women_Denim_109.png",
-            "candlelight_1/Lagence_Women_Denim_148.png",
-            "candlelight_1/lichi_women_sets_200.png",
-            "candlelight_1/maisonmargiela_R2_men_shirts_040.png",
-            "candlelight_1/MOSSANDSPY_WOMEN_DRESS_052.png",
-            "candlelight_1/Nanagotti_Women_Dresses_022.png",
-            "candlelight_1/Oakandfort_R2_Men_Bottoms_015.png",
-            "candlelight_1/Oakandfort_R2_Women_Outerwear_002.png",
-            "candlelight_1/Oakandfort_R2_Women_Outerwear_003.png",
-            "candlelight_1/oakandfort_womenknitwear_036.png",
-            "candlelight_1/TAGEECHITA_WOMEN_TOPS_006.png",
-            "candlelight_1/ZARA_R2_WOMEN_TROUSERS_004.png",
-            "candlelight_1/acnestudios_women_outerwear_039.png",
-            "candlelight_1/balmain_women_t_shirts_034.png",
-            "candlelight_1/Bananarepublic_R2_Women_Sweaters_Cardigan_064.png",
-            "candlelight_1/baobabswim_women_resortwear_018.png",
-            "candlelight_1/baobabswim_women_resortwear_163.png",
-            "candlelight_1/casall_women_jackets_025.png",
-            "candlelight_1/casall_women_longsleeved-tops_020.png",
-            "candlelight_1/CELTICANDCO_WOMEN_KNITWEARS_131.png",
-            "candlelight_1/Cigaberry_Women_Tops_010.png",
-            "candlelight_1/dandydelmar_women_sets_007.png",
-            "candlelight_1/dandydelmar_women_sets_009.png",
-            "candlelight_1/DIDU_Women_Tops_025.png",
-            "candlelight_1/Diotima_Women_Trousers_003.png",
-            "candlelight_1/DistrictVision_Women_Tops_009.png",
-            "candlelight_1/dodobaror_women_tops_003.png",
-            "candlelight_1/finisterre_menyulexwetsuits_004.png",
-            "candlelight_1/houseofcb_women_tops_181.png",
-            "candlelight_1/Lagence_Women_Denim_109.png",
-            "candlelight_1/Lagence_Women_Denim_148.png",
-            "candlelight_1/lichi_women_sets_200.png",
-            "candlelight_1/maisonmargiela_R2_men_shirts_040.png",
-            "candlelight_1/MOSSANDSPY_WOMEN_DRESS_052.png",
-            "candlelight_1/Nanagotti_Women_Dresses_022.png",
-            "candlelight_1/Oakandfort_R2_Men_Bottoms_015.png",
-            "candlelight_1/Oakandfort_R2_Women_Outerwear_002.png",
-            "candlelight_1/Oakandfort_R2_Women_Outerwear_003.png",
-            "candlelight_1/oakandfort_womenknitwear_036.png",
-            "candlelight_1/paxphilomena_men_short_sleeves_shirts_003.png",
-            "candlelight_1/TAGEECHITA_WOMEN_TOPS_006.png",
-            "candlelight_1/ZARA_R2_WOMEN_DRESS_173.png",
-            "candlelight_1/ZARA_R2_WOMEN_TROUSERS_004.png"
+            "kan_women_skirt_015.png",
+            "Lagence_Women_Denim_109.png",
+            "Lagence_Women_Denim_148.png",
+            "lichi_women_sets_200.png",
+            "maisonmargiela_R2_men_shirts_040.png",
+            "MOSSANDSPY_WOMEN_DRESS_052.png",
+            "Nanagotti_Women_Dresses_022.png",
+            "Oakandfort_R2_Men_Bottoms_015.png",
+            "Oakandfort_R2_Women_Outerwear_002.png",
+            "Oakandfort_R2_Women_Outerwear_003.png",
+            "oakandfort_womenknitwear_036.png",
+            "TAGEECHITA_WOMEN_TOPS_006.png",
+            "ZARA_R2_WOMEN_TROUSERS_004.png",
+            "acnestudios_women_outerwear_039.png",
+            "balmain_women_t_shirts_034.png",
+            "Bananarepublic_R2_Women_Sweaters_Cardigan_064.png",
+            "baobabswim_women_resortwear_018.png",
+            "baobabswim_women_resortwear_163.png",
+            "casall_women_jackets_025.png",
+            "casall_women_longsleeved-tops_020.png",
+            "CELTICANDCO_WOMEN_KNITWEARS_131.png",
+            "Cigaberry_Women_Tops_010.png",
+            "dandydelmar_women_sets_007.png",
+            "dandydelmar_women_sets_009.png",
+            "DIDU_Women_Tops_025.png",
+            "Diotima_Women_Trousers_003.png",
+            "DistrictVision_Women_Tops_009.png",
+            "dodobaror_women_tops_003.png",
+            "finisterre_menyulexwetsuits_004.png",
+            "houseofcb_women_tops_181.png",
+            "Lagence_Women_Denim_109.png",
+            "Lagence_Women_Denim_148.png",
+            "lichi_women_sets_200.png",
+            "maisonmargiela_R2_men_shirts_040.png",
+            "MOSSANDSPY_WOMEN_DRESS_052.png",
+            "Nanagotti_Women_Dresses_022.png",
+            "Oakandfort_R2_Men_Bottoms_015.png",
+            "Oakandfort_R2_Women_Outerwear_002.png",
+            "Oakandfort_R2_Women_Outerwear_003.png",
+            "oakandfort_womenknitwear_036.png",
+            "paxphilomena_men_short_sleeves_shirts_003.png",
+            "TAGEECHITA_WOMEN_TOPS_006.png",
+            "ZARA_R2_WOMEN_DRESS_173.png",
+            "ZARA_R2_WOMEN_TROUSERS_004.png",
+
+            # from big face 100
+            "BADRHINO_MEN_T-SHIRTS_011.png",
+            "kan_women_skirt_015.png",
+            "paxphilomena_men_short_sleeves_shirts_003.png",
+            "ZARA_R2_WOMEN_DRESS_173.png",
         }
 
-# Configuration
-target_prefix = "exp_10_11"  # only process folders with this prefix
-relight_type = "candlelight_1" # NOTE: change this everytime to avoid overwriting previous data
+# ---- NEW: import shared config + prompt dict ----
+from utils import parse_arguments, load_config, relighting_prompt_versions
+
+# ---- load config just like inference ----
+args = parse_arguments()
+config = load_config(args)
+target_prefix = config.output_dir      # was hardcoded "exp_10_16"
+relight_type = config.relight_type     # was hardcoded "candlelight_1"
+prompt = relighting_prompt_versions[str(config.prompt_version)][relight_type]
 
 # Directories
 root_dir = "/home/shenzhen/Relight_Projects/relighting/outputs"
 output_dir = os.path.join("/scratch/shenzhen/relighting", target_prefix, relight_type)
 
-# Define prompt
-prompt = "Relit with warm candlelight in a dimly lit indoor setting, casting soft, flickering shadows and enveloping the subject in golden-orange tones to create a cozy, nostalgic mood."
 
 # Save cropped base and relight images
 def save_crops(image_paths, base_folder, relight_folder, start_idx=0, img_dim=784):
     idx = start_idx
-
     for img_path in tqdm(image_paths, desc=f"Cropping {os.path.basename(base_folder)}"):
         try:
             img = Image.open(img_path)
@@ -106,8 +115,8 @@ def save_crops(image_paths, base_folder, relight_folder, start_idx=0, img_dim=78
             idx += 1
         except Exception as e:
             print(f"Failed to process {img_path}: {e}")
-            
     return idx
+
 
 def create_json(num_images, prompt, output_path):
     data = {f"{i}.png": prompt for i in range(num_images)}
@@ -115,33 +124,28 @@ def create_json(num_images, prompt, output_path):
         json.dump(data, f, indent=4)
     print(f"Saved JSON to {output_path}")
 
+
 # Output subdirectories
 save_base_train_A = os.path.join(output_dir, "train_A")
 save_relight_train_B = os.path.join(output_dir, "train_B")
 save_base_test_A = os.path.join(output_dir, "test_A")
 save_relight_test_B = os.path.join(output_dir, "test_B")
 
-# Create output directories
 for d in [save_base_train_A, save_relight_train_B, save_base_test_A, save_relight_test_B]:
     os.makedirs(d, exist_ok=True)
 
 # Collect valid image paths
 valid_image_paths = []
 
-# Iterate over folder for image filtering and selection.
 for exp_folder in sorted(os.listdir(root_dir)):
-
     if not exp_folder.startswith(target_prefix):
-        continue  # skip others
-
+        continue
     subfolder = os.path.join(root_dir, exp_folder, relight_type)
-
     if not os.path.isdir(subfolder):
         continue
 
     invalid_path = os.path.join(subfolder, "invalid.txt")
     invalid_files = set()
-
     if os.path.exists(invalid_path):
         with open(invalid_path, "r") as f:
             invalid_files = set(line.strip() for line in f.readlines())
@@ -150,23 +154,20 @@ for exp_folder in sorted(os.listdir(root_dir)):
         if (
             fname.lower().endswith(".png")
             and fname not in invalid_files
-            and fname not in skip_list      # <-- add this line
+            and fname not in skip_list
         ):
             valid_image_paths.append(os.path.join(subfolder, fname))
 
-# Shuffle and split 80/20 (NOTE: use seed=0 for reproducibility)
+# Shuffle and split
 random.seed(0)
 random.shuffle(valid_image_paths)
 split_idx = int(0.8 * len(valid_image_paths))
 train_files = valid_image_paths[:split_idx]
 test_files = valid_image_paths[split_idx:]
 
-# # Save crops for train and test sets
+# Write crops + json
 save_crops(train_files, save_base_train_A, save_relight_train_B)
-save_crops(test_files, save_base_test_A, save_relight_test_B)
+create_json(len(train_files), prompt, os.path.join(output_dir, "train_prompts.json"))
 
-# Save JSONs
-num_train = len(train_files)
-num_test = len(test_files)
-create_json(num_train, prompt, os.path.join(output_dir, "train_prompts.json"))
-create_json(num_test, prompt, os.path.join(output_dir, "test_prompts.json"))
+save_crops(test_files, save_base_test_A, save_relight_test_B)
+create_json(len(test_files), prompt, os.path.join(output_dir, "test_prompts.json"))

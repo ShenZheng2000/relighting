@@ -65,22 +65,12 @@ relighting_prompts_5 = {
 
 relighting_prompts_6 = {
     # NOTE: these prompts looks good!!!
-    "golden_hour_back": "relit with golden-hour sunlight from behind, face in shadow, rim glow",
-    "golden_hour_side": "relit with golden-hour sunlight from the side, one side lit, one side shadowed",
-    "golden_hour_front": "relit with golden-hour sunlight from the front, face fully lit, no shadows",
+    # "golden_hour_back": "relit with golden-hour sunlight from behind, face in shadow, rim glow",
+    # "golden_hour_side": "relit with golden-hour sunlight from the side, one side lit, one side shadowed",
+    # "golden_hour_front": "relit with golden-hour sunlight from the front, face fully lit, no shadows",
 
-    # NOTE: let's focus on golden_hour_back, and try several more versions. 
-    "golden_hour_back_1": "Relit with golden-hour sunlight from behind, softly outlining the subject in amber tones, casting long, fading shadows, and creating a calm, atmospheric glow.", 
-    # "golden_hour_back_2": "Relit with golden-hour sunlight from behind, producing a subtle rim light around the figure, warming the scene with gentle contrast and soft shadow play.",
-    # "golden_hour_back_3": "Relit with golden-hour sunlight from behind, illuminating the edges of the hair and shoulders, while casting extended soft-edged shadows across a peaceful backdrop.",
-    # "golden_hour_back_4": "Relit with golden-hour sunlight from behind, bathing the background in warm hues and gently silhouetting the subject with a dreamy golden glow.",
-
-    # "golden_hour_back_5": "relit with golden-hour sunlight from behind, as warm rays pass through tree branches in a quiet meadow, outlining the subject with soft rim light and stretching long, golden shadows across the earth.",
-    # "golden_hour_back_6": "relit with golden-hour sunlight from behind, where light filters through autumn leaves in a serene park, wrapping the figure in a glowing halo and casting gentle gradients of shadow over a grassy path.",
-    # "golden_hour_back_7": "relit with golden-hour sunlight from behind, the sky glowing orange as the low sun outlines the subject's silhouette and throws delicate, elongated shadows across a peaceful natural landscape.",
-    # "golden_hour_back_8": "relit with golden-hour sunlight from behind, in a tranquil outdoor setting where the subject is softly framed by backlit highlights, and the scene is infused with amber tones and fading daylight shadows.",
-    
-    "candlelight_1": "Relit with warm candlelight in a dimly lit indoor setting, casting soft, flickering shadows and enveloping the subject in golden-orange tones to create a cozy, nostalgic mood."
+    "candlelight_1": "Relit with warm candlelight in a dimly lit indoor setting, casting soft, flickering shadows and enveloping the subject in golden-orange tones to create a cozy, nostalgic mood.",
+    "noon_sunlight_1": "Relit with bright noon sunlight in a clear outdoor setting, casting soft natural shadows and surrounding the subject in crisp white light to create a clean, vibrant daytime mood."
 
 }
 
