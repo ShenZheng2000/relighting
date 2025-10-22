@@ -6,3 +6,7 @@
 
 # # warp dataset to enlarge faces
 # python warp_dataset.py --base_config configs/base_10_2.yaml --exp_config configs/exp_10_9.yaml --relight_type candlelight_1 --gpu 0
+# python warp_dataset.py --base_config configs/base_10_2.yaml --exp_config configs/exp_10_11.yaml --relight_type candlelight_1 --gpu 0
+# python warp_dataset.py --base_config configs/base_10_2.yaml --exp_config configs/exp_10_16.yaml --relight_type candlelight_1 --gpu 1
+
+python warp_dataset.py --base_config configs/base_10_2.yaml --exp_config configs/exp_10_16.yaml --relight_type candlelight_1 --gpu 1 --bw 256

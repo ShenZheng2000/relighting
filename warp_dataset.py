@@ -12,15 +12,43 @@ from warp_utils.warping_layers import PlainKDEGrid, warp, load_img_warp, save_im
 
 # ---- NEW: import shared config & load ----
 from utils import parse_arguments, load_config
-args = parse_arguments()
+
+import argparse
+import sys
+
+
+
+# ============================================================
+# ✅ Add a local-only --bw arg without touching your parser
+#    (strip it from sys.argv so parse_arguments() won't see it)
+# ============================================================
+_extra = argparse.ArgumentParser(add_help=False)
+_extra.add_argument(
+    "--bw",
+    type=int,
+    default=512,
+    help="Override bandwidth_scale for KDE warp (does not touch config)",
+)
+
+# Parse only --bw and remove it from argv before calling parse_arguments()
+_extra_args, _remaining = _extra.parse_known_args(sys.argv[1:])
+sys.argv = [sys.argv[0]] + _remaining   # <-- hide --bw from your parser
+
+args = parse_arguments()                 # your existing function (unchanged)
+setattr(args, "bw", _extra_args.bw)      # attach bw to args so downstream code can use it
+
 config = load_config(args)
+bandwidth_scale = args.bw
+
+print(f"🔧 Using bandwidth_scale = {bandwidth_scale} for this run")
+
 
 target_prefix = config.output_dir     # e.g. exp_10_9
 relight_type  = config.relight_type   # e.g. candlelight_1
 
 # ---- auto input/output ----
-input_root  = f"/scratch/shenzhen/relighting/{target_prefix}/{relight_type}"
-output_root = f"/scratch/shenzhen/relighting/{target_prefix}_warped/{relight_type}"
+input_root  = f"/ssd1/shenzhen/relighting/{target_prefix}/{relight_type}"
+output_root = f"/ssd1/shenzhen/relighting/{target_prefix}_warped_{bandwidth_scale}/{relight_type}"
 
 subfolders_to_warp = ["train_A", "test_A"]
 subfolders_to_copy = ["train_B", "test_B"]
@@ -60,7 +88,7 @@ def process_image(img_path, warped_dir):
         input_shape=(height, width),
         output_shape=(height, width),
         separable=True,
-        bandwidth_scale=512, # TODO: adjust this later
+        bandwidth_scale=bandwidth_scale,   # <<< CHANGED (formerly 512)
         amplitude_scale=1.0,
     ).to("cuda")
 
