@@ -97,7 +97,7 @@ prompt = relighting_prompt_versions[str(config.prompt_version)][relight_type]
 
 # Directories
 root_dir = "/home/shenzhen/Relight_Projects/relighting/outputs"
-output_dir = f"/data3/shenzhen/Datasets/relighting/{target_prefix}/{relight_type}"
+output_dir = f"/home/shenzhen/Datasets/relighting/{target_prefix}/{relight_type}"
 
 
 # Save cropped base and relight images

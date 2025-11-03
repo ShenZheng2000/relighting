@@ -62,14 +62,14 @@ relighting_prompts_6 = {
 In `configs/base.yaml`, set `input_dir` to your dataset path. 
 Example:
 ```
-input_dir: /home/shenzhen/Datasets/dataset_with_garment_debug_100
+input_dir: /home/shenzhen/Datasets/dataset_with_garment_bigface_100
 ```
 
-Randomly sampled 100 images folder name in `shen_scripts/debug_100.txt`
+You can use `shen_scripts/bigface_100.txt` to get these 100 images
 
 Expected dataset folder structure:
 ```
-dataset_with_garment_debug_100/
+dataset_with_garment_bigface_100/
 ├── 8seconds_men_shirts_034/
 │   ├── pre_processing/
 │   ├── bdy_2.jpg
@@ -82,16 +82,15 @@ dataset_with_garment_debug_100/
 └── ...
 ```
 
-Alteratively, randomly sample 1000 images using `shen_scripts/random_sample.py` to get `dataset_with_garment_debug_1000`
-
-Or the 100 big face images in  `shen_scripts/bigface_100.txt`
-
+(NOTE: if different dataset, run a separate face detector to get the N big face images!)
+Alternatively, sample random images using `shen_scripts/random_sample.py` or big face images using `shen_scripts/bigface_sample.py`
 
 
 ## 5. Prepare Config
 In your experiment config (e.g., `configs/exp_10_16.yaml`):
 * Set `prompt_version` (default: 6)
 * Set `max_images` (2 for quick debugging, null for full experiments)
+* Set `upper_crop` (default: true. recommended for warping experiments: false)
 
 
 ## 6. Run inference 
@@ -115,44 +114,17 @@ wait
 
 All images will be saved in `outputs/`
 
-<details>
-<summary><strong> (Optional) Filter out bad images using GPT-API</strong></summary>
 
-Install the OpenAI client: 
+
+## 7. Prepare Dataset in Pix2Pix-Turbo's Format
+
+
+Run in terminal (same config as above)
 ```
-pip install openai
-```
-
-Edit the script: `shen_scripts/gpt_api_decide.py`
-
-* Set your API key: 
-    ```
-    client = openai.OpenAI(api_key="xxx")
-    ```
-
-* Set your root directory. For example: 
-    ```
-    root_dir = "/home/shenzhen/Relight_Projects/relighting/outputs"
-    ```
-
-Run the script. For each subfolder with images, a corresponding `invalid.txt` will be generated listing the filtered-out images.
-</details>
-
-
-# Train Pix2Pix-Turbo with Synthesized Images
-
-## 1. Prepare Dataset in Pix2Pix-Turbo's Format
-
-For example, to prepare the dataset in Pix2Pix-Turbo's format:
-
-Go to the relighting repo. 
-
-Run in terminal
-```
-python prepare_data.py --base_config configs/base_10_2.yaml --exp_config configs/exp_10_9.yaml --relight_type candlelight_1 --gpu 0
+python prepare_data.py --base_config configs/base_10_2.yaml --exp_config configs/exp_10_16.yaml --relight_type candlelight_1 --gpu 0
 ```
 
-The script will:
+The script above will:
 * Format images into the structure required by Pix2Pix-Turbo
 * Automatically split into train/test
 * Skip any images listed in `invalid.txt` or `skip_list`
@@ -182,8 +154,37 @@ The script will:
 
 
 
+<details>
+<summary><strong> (Optional, ) Filter out bad images using GPT-API</strong></summary>
 
-## 2. Setup Repo and Install Env
+Install the OpenAI client: 
+```
+pip install openai
+```
+
+Edit the script: `shen_scripts/gpt_api_decide.py`
+
+* Set your API key: 
+    ```
+    client = openai.OpenAI(api_key="xxx")
+    ```
+
+* Set your root directory. For example: 
+    ```
+    root_dir = "/home/shenzhen/Relight_Projects/relighting/outputs"
+    ```
+
+Run the script. For each subfolder with images, a corresponding `invalid.txt` will be generated listing the filtered-out images.
+</details>
+
+
+
+
+
+# Train Pix2Pix-Turbo with Synthesized Images
+
+
+## 1. Setup Repo and Install Env
 ```
 git clone https://github.com/ShenZheng2000/img2img-turbo
 cd img2img-turbo
@@ -202,18 +203,18 @@ pip install onnxruntime-gpu==1.17.1
 ```
 
 
-## 3. Image Warping on Detected Face Regions
+## 2. Image Warping on Detected Face Regions
 
-Stay in img2img-turbo repo. (NOTE: 128 is the recommended bandwidth)
+Stay in img2img-turbo repo. (NOTE: 128 is the recommended bandwidth/bw)
 
 Run in terminal:
 ```
-python warp_dataset.py --target_prefix exp_10_16 --relight_type noon_sunlight_1 --bw 128
+python warp_dataset.py --target_prefix exp_10_16 --relight_type candlelight_1 --bw 128
 ```
 
 ### Example Dataset Structure (Warped Images)
 ```
-/data/candlelight_1_warped_{bandwidth_scale}
+/data/candlelight_1_warped_{bw}
 ├── train_A
 │ ├── 0.png
 │ ├── 0.inv.pth
@@ -243,7 +244,7 @@ python warp_dataset.py --target_prefix exp_10_16 --relight_type noon_sunlight_1 
 ```
 
 
-## 4. Model Training 
+## 3. Model Training 
 
 For training details, see the [official guide](https://github.com/GaParmar/img2img-turbo/blob/main/docs/training_pix2pix_turbo.md)
 
@@ -254,7 +255,7 @@ Run in terminal
 bash run.sh
 ```
 
-## 5. Model Testing
+## 4. Model Testing
 
 Example testing with 1 GPU
 ```
