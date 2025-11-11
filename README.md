@@ -18,7 +18,7 @@ We use the ChatGPT API to filter out low-quality images before training.
 
 **Image Warping on Detected Face Regions**
 
-We detect face regions and apply saliency-guided warping to enlarge them, which increases the effective resolution and allows finer facial details to be represented and reconstructed in the latent space.
+We detect facial and eye regions and apply saliency-guided warping to enlarge them, increasing effective resolution and enabling finer details to be represented and reconstructed in the latent space.
 
 **Image-to-Image Model Training**  
 Finally, we train an image-to-image translation model (e.g., Pix2Pix-Turbo) on the synthesized pairs to distill the relighting behavior into a lightweight, fast-inference network.
@@ -72,6 +72,7 @@ Expected dataset folder structure:
 dataset_with_garment_bigface_100/
 ├── 8seconds_men_shirts_034/
 │   ├── pre_processing/
+│       ├── black_fg_mask_groundedsam2.png
 │   ├── bdy_2.jpg
 │   └── gar_0.jpg
 │   └── gpt_annotation__bdy_2.txt
@@ -119,19 +120,21 @@ All images will be saved in `outputs/`
 ## 7. Prepare Dataset in Pix2Pix-Turbo's Format
 
 
-Run in terminal (same config as above)
+Run the following command in the terminal 
+
+NOTE: same config as above, but please update `root_dir` and `output_dir` in `prepare_data.py`
 ```
 python prepare_data.py --base_config configs/base_10_2.yaml --exp_config configs/exp_10_16.yaml --relight_type candlelight_1 --gpu 0
 ```
 
 The script above will:
 * Format images into the structure required by Pix2Pix-Turbo
-* Automatically split into train/test
-* Skip any images listed in `invalid.txt` or `skip_list`
+* Automatically split the dataset into train/test sets
+* Skip any images listed in `invalid.txt` or `skip_list` (you can modify or remove these files if needed)
 
 ### Example Dataset Structure
 ```
-/data/candlelight_1
+/home/shenzhen/Datasets/relighting/exp_10_16/candlelight_1
 ├── train_A
 │ ├── 0.png
 │ ├── 1.png
@@ -205,16 +208,23 @@ pip install onnxruntime-gpu==1.17.1
 
 ## 2. Image Warping on Detected Face Regions
 
-Stay in img2img-turbo repo. (NOTE: 128 is the recommended bandwidth/bw)
+Run the following commands inside the `img2img-turbo` repository.
+
+NOTE: A bandwidth (`--bw`) of 128 is recommended, and using `--include-eyes` improves face and eye detail quality.
 
 Run in terminal:
 ```
-python warp_dataset.py --target_prefix exp_10_16 --relight_type candlelight_1 --bw 128
+python warp_dataset.py \
+    --input_root /home/shenzhen/Datasets/relighting \
+    --target_prefix exp_10_16 \
+    --relight_type candlelight_1 \
+    --bw 128 \
+    --include-eyes
 ```
 
 ### Example Dataset Structure (Warped Images)
 ```
-/data/candlelight_1_warped_{bw}
+/home/shenzhen/Datasets/relighting/exp_10_16_warped_128/candlelight_1
 ├── train_A
 │ ├── 0.png
 │ ├── 0.inv.pth
