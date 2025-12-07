@@ -125,49 +125,67 @@ def create_json(num_images, prompt, output_path):
     print(f"Saved JSON to {output_path}")
 
 
-# Output subdirectories
-save_base_train_A = os.path.join(output_dir, "train_A")
-save_relight_train_B = os.path.join(output_dir, "train_B")
-save_base_test_A = os.path.join(output_dir, "test_A")
-save_relight_test_B = os.path.join(output_dir, "test_B")
+def collect_valid_paths(root_dir, target_prefix, relight_type, skip_list):
+    valid_image_paths = []
+    for exp_folder in sorted(os.listdir(root_dir)):
+        if not exp_folder.startswith(target_prefix):
+            continue
+        subfolder = os.path.join(root_dir, exp_folder, relight_type)
+        if not os.path.isdir(subfolder):
+            continue
 
-for d in [save_base_train_A, save_relight_train_B, save_base_test_A, save_relight_test_B]:
-    os.makedirs(d, exist_ok=True)
+        invalid_path = os.path.join(subfolder, "invalid.txt")
+        invalid_files = set()
+        if os.path.exists(invalid_path):
+            with open(invalid_path, "r") as f:
+                invalid_files = set(line.strip() for line in f.readlines())
 
-# Collect valid image paths
-valid_image_paths = []
+        for fname in sorted(os.listdir(subfolder)):
+            if (
+                fname.lower().endswith(".png")
+                and fname not in invalid_files
+                and fname not in skip_list
+            ):
+                valid_image_paths.append(os.path.join(subfolder, fname))
 
-for exp_folder in sorted(os.listdir(root_dir)):
-    if not exp_folder.startswith(target_prefix):
-        continue
-    subfolder = os.path.join(root_dir, exp_folder, relight_type)
-    if not os.path.isdir(subfolder):
-        continue
+    return valid_image_paths
 
-    invalid_path = os.path.join(subfolder, "invalid.txt")
-    invalid_files = set()
-    if os.path.exists(invalid_path):
-        with open(invalid_path, "r") as f:
-            invalid_files = set(line.strip() for line in f.readlines())
 
-    for fname in sorted(os.listdir(subfolder)):
-        if (
-            fname.lower().endswith(".png")
-            and fname not in invalid_files
-            and fname not in skip_list
-        ):
-            valid_image_paths.append(os.path.join(subfolder, fname))
+def main():
+    args = parse_arguments()
+    config = load_config(args)
 
-# Shuffle and split
-random.seed(0)
-random.shuffle(valid_image_paths)
-split_idx = int(0.8 * len(valid_image_paths))
-train_files = valid_image_paths[:split_idx]
-test_files = valid_image_paths[split_idx:]
+    target_prefix = config.output_dir
+    relight_type = config.relight_type
+    prompt = relighting_prompt_versions[str(config.prompt_version)][relight_type]
 
-# Write crops + json
-save_crops(train_files, save_base_train_A, save_relight_train_B)
-create_json(len(train_files), prompt, os.path.join(output_dir, "train_prompts.json"))
+    root_dir = "/home/shenzhen/Relight_Projects/relighting/outputs"
+    output_dir = f"/home/shenzhen/Datasets/relighting/{target_prefix}/{relight_type}"
 
-save_crops(test_files, save_base_test_A, save_relight_test_B)
-create_json(len(test_files), prompt, os.path.join(output_dir, "test_prompts.json"))
+    save_base_train_A = os.path.join(output_dir, "train_A")
+    save_relight_train_B = os.path.join(output_dir, "train_B")
+    save_base_test_A = os.path.join(output_dir, "test_A")
+    save_relight_test_B = os.path.join(output_dir, "test_B")
+    for d in [save_base_train_A, save_relight_train_B, save_base_test_A, save_relight_test_B]:
+        os.makedirs(d, exist_ok=True)
+
+    valid_image_paths = collect_valid_paths(root_dir, target_prefix, relight_type, skip_list)
+
+    random.seed(0)
+    random.shuffle(valid_image_paths)
+
+    split_idx = int(0.8 * len(valid_image_paths))
+    train_files = valid_image_paths[:split_idx]
+    test_files = valid_image_paths[split_idx:]
+
+    save_crops(train_files, save_base_train_A, save_relight_train_B)
+    create_json(len(train_files), prompt, os.path.join(output_dir, "train_prompts.json"))
+
+    save_crops(test_files, save_base_test_A, save_relight_test_B)
+    create_json(len(test_files), prompt, os.path.join(output_dir, "test_prompts.json"))
+
+    print("Done.")
+
+
+if __name__ == "__main__":
+    main()

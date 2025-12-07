@@ -5,44 +5,44 @@ import shutil
 # Settings
 # ----------------------------
 
-src_dir = "/home/shenzhen/Datasets/dataset_with_garment"        # original dataset
+src_dir = "/home/shenzhen/Datasets/dataset_with_garment"
 
-# num_sample = 1000
-num_sample = 100
+ranking_file = "/home/shenzhen/Relight_Projects/relighting/shen_scripts/face_area_ranking.txt"
 
-# dst_dir = "/home/shenzhen/Datasets/dataset_with_garment_bigface_1000"  # output subset
-dst_dir = f"/home/shenzhen/Datasets/dataset_with_garment_bigface_{num_sample}"  # output subset
+# choose range directly
+start_num = 100       # inclusive
+end_num   = 200       # exclusive
 
-ranking_file = f"/home/shenzhen/Relight_Projects/face_detection/retinaface/face_area_ranking.txt"  # file like "1,Qnigirls_Women_Tops_163,80"
+# new output dir
+dst_dir = f"/home/shenzhen/Datasets/dataset_with_garment_bigface_start_{start_num}_end_{end_num}"
+os.makedirs(dst_dir, exist_ok=True)
 
+print(f"Selecting ranked folders from {start_num} to {end_num}...")
 # ----------------------------
 
-# Read ranking file
+# Read ranking file and extract folder names
 ranked_folders = []
 with open(ranking_file, "r") as f:
     for line in f:
         parts = line.strip().split(",")
         if len(parts) >= 2:
-            folder_name = parts[1].strip()
+            folder_name = parts[1].strip().strip("'\"")  # clean quotes
             ranked_folders.append(folder_name)
 
-# Limit to top-N
-ranked_folders = ranked_folders[:num_sample]
-print(f"Selecting top {len(ranked_folders)} folders from ranking file.")
-
-# Create destination root
-os.makedirs(dst_dir, exist_ok=True)
+# slice based on start and end
+subset = ranked_folders[start_num : end_num]
+print(f"Found {len(subset)} folders.")
 
 # Copy folders
-for i, folder_name in enumerate(ranked_folders, 1):
+for i, folder_name in enumerate(subset, 1):
     src_path = os.path.join(src_dir, folder_name)
     dst_path = os.path.join(dst_dir, folder_name)
 
     if not os.path.exists(src_path):
-        print(f"[Skip] Folder not found: {folder_name}")
+        print(f"[Skip] Missing: {folder_name}")
         continue
 
-    print(f"[{i}/{len(ranked_folders)}] Copying: {folder_name}")
+    print(f"[{i}/{len(subset)}] Copying: {folder_name}")
     shutil.copytree(src_path, dst_path)
 
-print(f"\n✅ Done! Copied top {len(ranked_folders)} folders to {dst_dir}")
+print("\n✅ DONE!")
