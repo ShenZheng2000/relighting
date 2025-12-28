@@ -1,6 +1,6 @@
 
 input_dir: "/home/shenzhen/Datasets/dataset_with_garment_bigface_100"
-max_images: 1 # TODO: return to null for full dataset
+max_images: 5 # TODO: return to null for full dataset
 
 # NOTE: set this one to false
 upper_crop: false # upper_crop: false

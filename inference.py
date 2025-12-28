@@ -199,6 +199,10 @@ def process_subfolder_inference(subfolder_path, config, pipe_inference, prompts)
 
     # Build the final prompt.
     relight_id = config.relight_type
+
+    if relight_id not in prompts:
+        raise KeyError(f"relight_type '{relight_id}' not found in prompt_version={config.prompt_version}")
+
     relight_prompt = prompts.get(relight_id, "")
 
     if config.relight_image_only:

@@ -69,15 +69,29 @@ relighting_prompts_6 = {
     # "golden_hour_side": "relit with golden-hour sunlight from the side, one side lit, one side shadowed",
     # "golden_hour_front": "relit with golden-hour sunlight from the front, face fully lit, no shadows",
 
-    "candlelight_1": "Relit with warm candlelight in a dimly lit indoor setting, casting soft, flickering shadows and enveloping the subject in golden-orange tones to create a cozy, nostalgic mood.",
     "noon_sunlight_1": "Relit with bright noon sunlight in a clear outdoor setting, casting soft natural shadows and surrounding the subject in crisp white light to create a clean, vibrant daytime mood.",
     "golden_sunlight_1": "Relit with warm golden sunlight during the late afternoon, casting gentle directional shadows and surrounding the subject in soft amber tones to create a calm, radiant mood.",
-    "spotlight_1": "Relit with a concentrated bright beam in an indoor stage scene, casting smooth directional shadows and fully lighting the subject to create a sharp, center-highlighted mood.",
-    "neon_streetlight_1": "Relit with vibrant neon streetlights in a lively outdoor setting, casting colorful pink and blue reflections and surrounding the subject with soft glowing edges to create a modern, cyberpunk mood.",
     "foggy_1": "Relit with dense fog in a muted outdoor setting, casting soft diffused shadows and surrounding the subject in pale gray light to create a quiet, atmospheric mood.",
     "moonlight_1": "Relit with cold moonlight in a minimalist nighttime scene, casting crisp soft shadows and bathing the subject in icy blue highlights to create a tranquil, distant mood.",
+    "dusk_backlit_1": "Relit with dramatic dusk backlighting after sunset, casting the subject into a dark silhouette while the sky fades from pale blue to deep indigo.",
+    
+    # "twilight_sky_1": "Relit with gentle blue-hour twilight after sunset, casting smooth diffused shadows and enveloping the subject in soft desaturated blue-gray tones to create a quiet, serene mood.", # TODO: think this later
+    # "morning_sunlight_1": "Relit with soft early-morning sunlight in a fresh outdoor setting, casting gentle short shadows and surrounding the subject in pale yellow-white tones to create a clean, lightweight mood.", # TODO: think this later
+
+    "candlelight_1": "Relit with warm candlelight in a dimly lit indoor setting, casting soft, flickering shadows and enveloping the subject in golden-orange tones to create a cozy, nostalgic mood.",
+    "spotlight_1": "Relit with a concentrated bright beam in an indoor stage scene, casting smooth directional shadows and fully lighting the subject to create a sharp, center-highlighted mood.",
+    "neon_streetlight_1": "Relit with vibrant neon streetlights in a lively outdoor setting, casting colorful pink and blue reflections and surrounding the subject with soft glowing edges to create a modern, cyberpunk mood.",
     "dappled_sunlight_1": "Relit with dappled sunlight softened by humid air, casting diffused warm blotches of light and surrounding the subject in hazy golden tones to create a gentle, atmospheric mood.",
-    "morning_sunlight_1": "Relit with soft early-morning sunlight in a fresh outdoor setting, casting gentle short shadows and surrounding the subject in pale yellow-white tones to create a clean, lightweight mood.",
+    
+    # "dusk_backlit_2": "Relit with dusk backlighting just before sunset, placing the subject in deep shadow against a softly illuminated blue-gradient evening sky.",
+    # "dusk_backlit_3": "Relit with strong backlighting at dusk, rendering the subject mostly as a silhouette against a cool blue twilight sky with a faint horizon glow.",
+    # "dusk_backlit_4": "Relit with dramatic dusk backlighting after sunset, casting the subject into a dark silhouette while the sky fades from pale blue to deep indigo.",
+    # "dusk_backlit_5":"Relit with extreme dusk backlighting, fully silhouetting the subject against a fading blue-to-black twilight sky.",
+
+    # "twilight_sky_2": "Relit with early evening twilight shortly after sunset, casting very soft low-contrast shadows and surrounding the subject in muted cool-gray tones to create a calm, transitional mood.",
+    # "twilight_sky_3": "Relit with gentle blue-hour twilight after sunset, casting smooth diffused shadows and enveloping the subject in soft desaturated blue-gray tones to create a quiet, serene mood.",
+    # "twilight_sky_4": "Relit with late twilight as the sky darkens, casting subtle directional shadows and surrounding the subject in cool slate-blue tones to create a subdued, contemplative mood.",
+    # "twilight_sky_5": "Relit with hazy twilight under thin clouds after sunset, casting softly glowing diffused shadows and enveloping the subject in pale lavender-gray tones to create a gentle, dreamy mood.",
 
     # "morning_sunlight_2": "Relit with soft early-morning sunlight in a fresh outdoor setting, casting gentle short shadows and surrounding the subject in pale yellow-white tones to create a clean, lightweight mood.",
     # "morning_sunlight_3": "Relit with cool early-morning sunlight after dawn, casting crisp bluish-tinted shadows and enveloping the subject in clear cool-white tones to create a brisk, awakened mood.",
@@ -192,6 +206,10 @@ def parse_arguments():
     parser.add_argument("--gpu", type=int, required=True, help="GPU ID to use")
     parser.add_argument('--num_seeds', type=int, default=1)
     parser.add_argument('--seed_offset', type=int, default=0, help='Starting seed value (default is 0)')
+
+    # ✅ ADD THIS (dataset version selector)
+    parser.add_argument("--dataset_tag", type=str, default="v1", help="controls skip_list version and (optionally) output folder naming")
+
     return parser.parse_args()
 
 def load_config(args):
@@ -202,6 +220,7 @@ def load_config(args):
     config.relight_type = args.relight_type
     config.gpu = args.gpu
     config.output_dir = os.path.splitext(os.path.basename(args.exp_config))[0]
+    config.dataset_tag = args.dataset_tag
     print(OmegaConf.to_yaml(config))
     return config
 
