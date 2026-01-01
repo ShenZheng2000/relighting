@@ -3,19 +3,25 @@ import openai
 from PIL import Image
 import io
 import base64
+import sys
+
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+from utils import relighting_prompts_6
 
 # Set your OpenAI API key
-client = openai.OpenAI(api_key="xxx")
+client = openai.OpenAI()
 
 # Root folder to search recursively
-root_dir = "/home/shenzhen/Relight_Projects/relighting/outputs"
-prompt_description = (
-    "Relit with warm candlelight in a dimly lit indoor setting, casting soft, flickering shadows and enveloping the subject in golden-orange tones to create a cozy, nostalgic mood."
-)
+root_dir = "/home/shenzhen/Relight_Projects/relighting/outputs/exp_10_16_seed0"
+relight_type = "moonlight_1"
+# model_name = 'gpt-4o' # this is ok
+# model_name = "gpt-4.1" # this is ok
+model_name = "gpt-4.1-mini" # this is too bad!
+prompt_description = relighting_prompts_6[relight_type]
 
 def query_chatgpt_with_image(img_b64, description_prompt):
     response = client.chat.completions.create(
-        model="gpt-4o",
+        model=model_name,
         temperature=0,
         messages=[
             {
@@ -61,7 +67,7 @@ def evaluate_all_images(folder, prompt_desc):
     if not image_files:
         return  # Skip folders without images
 
-    invalid_txt_path = os.path.join(folder, "invalid.txt")
+    invalid_txt_path = os.path.join(folder, f"{model_name}_invalid.txt")
     if os.path.exists(invalid_txt_path):
         os.remove(invalid_txt_path)
 
@@ -91,4 +97,4 @@ def walk_and_evaluate(root, prompt_desc):
             evaluate_all_images(dirpath, prompt_desc)
 
 # Run it
-walk_and_evaluate(root_dir, prompt_description)
+walk_and_evaluate(os.path.join(root_dir, relight_type), prompt_description)
