@@ -14,9 +14,9 @@ client = openai.OpenAI()
 # Root folder to search recursively
 root_dir = "/home/shenzhen/Relight_Projects/relighting/outputs/exp_10_16_seed0"
 relight_type = "moonlight_1"
-# model_name = 'gpt-4o' # this is ok
+model_name = 'gpt-4o' # this is ok
 # model_name = "gpt-4.1" # this is ok
-model_name = "gpt-4.1-mini" # this is too bad!
+# model_name = "gpt-4.1-mini" # this is too bad!
 prompt_description = relighting_prompts_6[relight_type]
 
 def query_chatgpt_with_image(img_b64, description_prompt):

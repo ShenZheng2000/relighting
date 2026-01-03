@@ -1,3 +1,14 @@
+# NOTE: this is the NEW inference version based on this format. 
+
+# $dataset_name/
+# ├── caption/
+# │   ├── 00000_00.txt
+# ├── fg_masks/
+# │   ├── 00000_00.png
+# ├── image/
+# │   ├── 00000_00.jpg
+# └── ...
+
 import os
 import glob
 import numpy as np
@@ -23,12 +34,10 @@ from utils import (
     extract_foreground,
     process_depth_map,
     resize_mask_to_canvas,
+    resolve_flat_paths
 )
 
-'''
-cd outputs/
-python -m http.server 8000
-'''
+
 
 # ---------------- Outpainting functions ---------------- #
 def run_outpainting(subfolder_path, config, pipe_outpaint, outpaint_prompts, depth_model, use_v2):
@@ -40,32 +49,46 @@ def run_outpainting(subfolder_path, config, pipe_outpaint, outpaint_prompts, dep
     Optionally saves depth maps if config.save_depth_maps is True.
     Returns paths to the base and relight outpainted images.
     """
-    # Collect required files.
-    annotation_files = glob.glob(os.path.join(subfolder_path, "*.txt"))
-    image_files = glob.glob(os.path.join(subfolder_path, "bdy_*"))
-    mask_files = glob.glob(os.path.join(subfolder_path, "pre_processing/body_mask/*.png"))
+    # # Collect required files.
+    # annotation_files = glob.glob(os.path.join(subfolder_path, "*.txt"))
+    # image_files = glob.glob(os.path.join(subfolder_path, "bdy_*"))
+    # mask_files = glob.glob(os.path.join(subfolder_path, "pre_processing/body_mask/*.png"))
 
-    if len(annotation_files) == 0 or len(image_files) == 0 or len(mask_files) == 0:
-        print(f"Skipping {subfolder_path} due to missing annotation/image/mask.")
-        return None, None
+    # if len(annotation_files) == 0 or len(image_files) == 0 or len(mask_files) == 0:
+    #     print(f"Skipping {subfolder_path} due to missing annotation/image/mask.")
+    #     return None, None
 
-    annotation_path = annotation_files[0]
-    source_image_path = image_files[0]
-    body_mask_rgba_path = mask_files[0]
+    # annotation_path = annotation_files[0]
+    # source_image_path = image_files[0]
+    # body_mask_rgba_path = mask_files[0]
 
-    # NOTE: decide to use original or grounded sam2 mask
-    if config.use_groundedsam2:
-        black_mask_path = os.path.join(subfolder_path, "pre_processing/black_fg_mask_groundedsam2.png")
-    else:
-        black_mask_path = os.path.join(subfolder_path, "pre_processing/black_fg_mask.png")
+    # Flat layout: subfolder_path is actually a stem like "00000_00"
+    stem = subfolder_path
+    source_image_path, annotation_path, black_mask_path = resolve_flat_paths(config, stem)
 
-    if os.path.exists(black_mask_path):
-        print("Skipping mask processing; using existing masks.")
-        body_mask = Image.open(black_mask_path).convert("L")
-    else:
-        # _, black_mask_path = process_body_mask(body_mask_rgba_path, white_mask_path)
-        black_mask_path = process_body_mask(body_mask_rgba_path, black_mask_path)
-        body_mask = Image.open(black_mask_path).convert("L")
+    if (source_image_path is None) or (not os.path.exists(annotation_path)) or (black_mask_path is None):
+        print(f"Skipping {stem} due to missing image/caption/mask.")
+        return None, None    
+
+
+    # # NOTE: decide to use original or grounded sam2 mask
+    # if config.use_groundedsam2:
+    #     black_mask_path = os.path.join(subfolder_path, "pre_processing/black_fg_mask_groundedsam2.png")
+    # else:
+    #     black_mask_path = os.path.join(subfolder_path, "pre_processing/black_fg_mask.png")
+
+    # if os.path.exists(black_mask_path):
+    #     print("Skipping mask processing; using existing masks.")
+    #     body_mask = Image.open(black_mask_path).convert("L")
+    # else:
+    #     # _, black_mask_path = process_body_mask(body_mask_rgba_path, white_mask_path)
+    #     black_mask_path = process_body_mask(body_mask_rgba_path, black_mask_path)
+    #     body_mask = Image.open(black_mask_path).convert("L")
+
+    # Flat layout: fg mask is already prepared and stored in root/fg_masks/{stem}.png
+    body_mask = Image.open(black_mask_path).convert("L")
+
+
 
     # Load source image and annotation.
     source_image = Image.open(source_image_path).convert("RGB")
@@ -129,7 +152,9 @@ def run_outpainting(subfolder_path, config, pipe_outpaint, outpaint_prompts, dep
     ).images[0]
 
     # Instead of saving inside the input subfolder, we save to the output directory.
-    outpaint_folder = os.path.join("outpaint", config.output_dir, relight_id, os.path.basename(subfolder_path))
+    # outpaint_folder = os.path.join("outpaint", config.output_dir, relight_id, os.path.basename(subfolder_path))
+    outpaint_folder = os.path.join("outpaint", config.output_dir, relight_id, stem)
+
     os.makedirs(outpaint_folder, exist_ok=True)
     base_no_path = os.path.join(outpaint_folder, "img_out_base.png")
     relight_path = os.path.join(outpaint_folder, "img_out_relight.png")
@@ -159,19 +184,36 @@ def run_outpainting(subfolder_path, config, pipe_outpaint, outpaint_prompts, dep
 
 
 
+# def run_outpainting_loop(config, pipe_outpaint, outpaint_prompts, depth_model, use_v2):
+#     """
+#     Loops over subfolders in the input directory to run outpainting.
+#     """
+#     count = 0
+#     for subfolder in sorted(os.listdir(config.input_dir)):
+#         subfolder_path = os.path.join(config.input_dir, subfolder)
+#         if os.path.isdir(subfolder_path):
+#             run_outpainting(subfolder_path, config, pipe_outpaint, outpaint_prompts, depth_model, use_v2)
+#             count += 1
+#             if config.max_images and count >= config.max_images:
+#                 print(f"Reached max_images limit: {config.max_images}. Stopping outpainting.")
+#                 return
+
 def run_outpainting_loop(config, pipe_outpaint, outpaint_prompts, depth_model, use_v2):
     """
-    Loops over subfolders in the input directory to run outpainting.
+    Flat layout: loop over root/image/* and use stem as sample id.
     """
     count = 0
-    for subfolder in sorted(os.listdir(config.input_dir)):
-        subfolder_path = os.path.join(config.input_dir, subfolder)
-        if os.path.isdir(subfolder_path):
-            run_outpainting(subfolder_path, config, pipe_outpaint, outpaint_prompts, depth_model, use_v2)
-            count += 1
-            if config.max_images and count >= config.max_images:
-                print(f"Reached max_images limit: {config.max_images}. Stopping outpainting.")
-                return
+    image_dir = os.path.join(config.input_dir, "image")
+    image_paths = sorted(glob.glob(os.path.join(image_dir, "*.*")))
+
+    for img_path in image_paths:
+        stem = os.path.splitext(os.path.basename(img_path))[0]
+        run_outpainting(stem, config, pipe_outpaint, outpaint_prompts, depth_model, use_v2)
+
+        count += 1
+        if config.max_images and count >= config.max_images:
+            print(f"Reached max_images limit: {config.max_images}. Stopping outpainting.")
+            return
 
 # ---------------- Inference functions ---------------- #
 def process_subfolder_inference(subfolder_path, config, pipe_inference, prompts):
@@ -179,16 +221,27 @@ def process_subfolder_inference(subfolder_path, config, pipe_inference, prompts)
     Processes a subfolder by running T2I inference.
     The final output is a concatenated image saved in the outputs directory.
     """
-    # Load the source image and annotation.
-    annotation_files = glob.glob(os.path.join(subfolder_path, "*.txt"))
-    image_files = glob.glob(os.path.join(subfolder_path, "bdy_*"))
+    # # Load the source image and annotation.
+    # annotation_files = glob.glob(os.path.join(subfolder_path, "*.txt"))
+    # image_files = glob.glob(os.path.join(subfolder_path, "bdy_*"))
     
-    if len(annotation_files) == 0 or len(image_files) == 0:
-        print(f"Skipping inference for {subfolder_path} due to missing annotation/image.")
+    # if len(annotation_files) == 0 or len(image_files) == 0:
+    #     print(f"Skipping inference for {subfolder_path} due to missing annotation/image.")
+    #     return
+
+    # annotation_path = annotation_files[0]
+    # source_image_path = image_files[0]
+
+
+    # Flat layout: subfolder_path is actually a stem like "00000_00"
+    stem = subfolder_path
+    source_image_path, annotation_path, _ = resolve_flat_paths(config, stem)
+
+    if (source_image_path is None) or (not os.path.exists(annotation_path)):
+        print(f"Skipping inference for {stem} due to missing image/caption.")
         return
 
-    annotation_path = annotation_files[0]
-    source_image_path = image_files[0]
+
     source_image = Image.open(source_image_path).convert('RGB')
     with open(annotation_path, "r") as f:
         base_prompt = f.read().strip()
@@ -225,6 +278,9 @@ def process_subfolder_inference(subfolder_path, config, pipe_inference, prompts)
             )
         output_width = config.width * 2  # Grid: double the width.
 
+    if "outpaint" in config.depth_mode and not config.save_depth_maps:
+        raise ValueError("depth_mode contains 'outpaint' but save_depth_maps is False")
+
     # Load or compute the depth map.
     depth_map_2x1 = load_depth_map(subfolder_path, config, relight_id)
 
@@ -252,26 +308,46 @@ def process_subfolder_inference(subfolder_path, config, pipe_inference, prompts)
     # Save the final concatenated result.
     output_dir_final = os.path.join("outputs", config.output_dir, relight_id)
     os.makedirs(output_dir_final, exist_ok=True)
-    output_filename = f"{os.path.basename(subfolder_path)}.png"
+
+    # output_filename = f"{os.path.basename(subfolder_path)}.png"
+    output_filename = f"{stem}.png"
+
     output_path = os.path.join(output_dir_final, output_filename)
     concatenated_image = concat_images_side_by_side(source_image, image)
     concatenated_image.save(output_path)
     print(f"Saved final inference image: {output_path}")
 
+# def run_inference_loop(config, pipe_inference, prompts):
+#     """
+#     Loops over subfolders in the input directory to run inference.
+#     """
+#     count = 0
+#     for subfolder in sorted(os.listdir(config.input_dir)):
+#         subfolder_path = os.path.join(config.input_dir, subfolder)
+#         if os.path.isdir(subfolder_path):
+#             process_subfolder_inference(subfolder_path, config, pipe_inference, prompts)
+
+#             count += 1
+#             if config.max_images and count >= config.max_images:
+#                 print(f"Reached max_images limit: {config.max_images}. Stopping inference.")
+#                 return
+
 def run_inference_loop(config, pipe_inference, prompts):
     """
-    Loops over subfolders in the input directory to run inference.
+    Flat layout: loop over root/image/* and use stem as sample id.
     """
     count = 0
-    for subfolder in sorted(os.listdir(config.input_dir)):
-        subfolder_path = os.path.join(config.input_dir, subfolder)
-        if os.path.isdir(subfolder_path):
-            process_subfolder_inference(subfolder_path, config, pipe_inference, prompts)
+    image_dir = os.path.join(config.input_dir, "image")
+    image_paths = sorted(glob.glob(os.path.join(image_dir, "*.*")))
 
-            count += 1
-            if config.max_images and count >= config.max_images:
-                print(f"Reached max_images limit: {config.max_images}. Stopping inference.")
-                return
+    for img_path in image_paths:
+        stem = os.path.splitext(os.path.basename(img_path))[0]
+        process_subfolder_inference(stem, config, pipe_inference, prompts)
+
+        count += 1
+        if config.max_images and count >= config.max_images:
+            print(f"Reached max_images limit: {config.max_images}. Stopping inference.")
+            return
 
 # ---------------- Main function ---------------- #
 def main():

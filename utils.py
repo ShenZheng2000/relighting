@@ -208,7 +208,7 @@ def parse_arguments():
     parser.add_argument('--seed_offset', type=int, default=0, help='Starting seed value (default is 0)')
 
     # ✅ ADD THIS (dataset version selector)
-    parser.add_argument("--dataset_tag", type=str, default="v1", help="controls skip_list version and (optionally) output folder naming")
+    parser.add_argument("--dataset_tag", type=str, default="", help="controls skip_list version and (optionally) output folder naming")
 
     return parser.parse_args()
 
@@ -225,24 +225,33 @@ def load_config(args):
     return config
 
 def load_depth_map(subfolder_path, config, relight_id):
-    if config.depth_mode == "filtered":
-        depth_path = os.path.join(subfolder_path, "pre_processing/depth_filtered.png")
-        depth_map = Image.open(depth_path).convert('RGB')
-        return Image.fromarray(np.hstack([np.array(depth_map), np.array(depth_map)]))
+    # if config.depth_mode == "filtered":
+    #     depth_path = os.path.join(subfolder_path, "pre_processing/depth_filtered.png")
+    #     depth_map = Image.open(depth_path).convert('RGB')
+    #     return Image.fromarray(np.hstack([np.array(depth_map), np.array(depth_map)]))
 
-    elif config.depth_mode == "filtered_pad":
-        depth_path = os.path.join(subfolder_path, "pre_processing/depth_filtered_pad.png")
-        depth_map = Image.open(depth_path).convert('RGB')
-        return Image.fromarray(np.hstack([np.array(depth_map), np.array(depth_map)]))
+    # elif config.depth_mode == "filtered_pad":
+    #     depth_path = os.path.join(subfolder_path, "pre_processing/depth_filtered_pad.png")
+    #     depth_map = Image.open(depth_path).convert('RGB')
+    #     return Image.fromarray(np.hstack([np.array(depth_map), np.array(depth_map)]))
 
-    elif config.depth_mode == "raw":
-        depth_path = os.path.join(subfolder_path, "pre_processing/depth.png")
-        depth_map = Image.open(depth_path).convert('RGB')
-        return Image.fromarray(np.hstack([np.array(depth_map), np.array(depth_map)]))
+    # elif config.depth_mode == "raw":
+    #     depth_path = os.path.join(subfolder_path, "pre_processing/depth.png")
+    #     depth_map = Image.open(depth_path).convert('RGB')
+    #     return Image.fromarray(np.hstack([np.array(depth_map), np.array(depth_map)]))
+
+    if config.depth_mode in ["filtered", "filtered_pad", "raw"]:
+        raise ValueError(
+            f"depth_mode={config.depth_mode} expects old per-subfolder layout (subfolder/pre_processing/*.png). "
+            "Use depth_mode containing 'outpaint' for flat layout."
+        )
 
     elif "outpaint" in config.depth_mode:
     
-        outpaint_folder = os.path.join("outpaint", config.output_dir, relight_id, os.path.basename(subfolder_path))
+        # outpaint_folder = os.path.join("outpaint", config.output_dir, relight_id, os.path.basename(subfolder_path))
+
+        stem = subfolder_path  # in flat mode, subfolder_path is actually the sample id stem
+        outpaint_folder = os.path.join("outpaint", config.output_dir, relight_id, stem)
 
         if config.relight_image_only:
             # Load only the relight depth map.
@@ -382,3 +391,28 @@ def resize_mask_to_canvas(mask, target_width, target_height):
     y_offset = (target_height - new_h) // 2
     canvas.paste(resized_mask, (x_offset, y_offset))
     return canvas
+
+
+def resolve_flat_paths(config, stem):
+    root = config.input_dir
+    image_dir = os.path.join(root, "image")
+    caption_dir = os.path.join(root, "caption")
+    mask_dir = os.path.join(root, "fg_masks")
+
+    img_candidates = [
+        os.path.join(image_dir, f"{stem}.jpg"),
+        os.path.join(image_dir, f"{stem}.jpeg"),
+        os.path.join(image_dir, f"{stem}.png"),
+    ]
+    source_image_path = next((p for p in img_candidates if os.path.exists(p)), None)
+
+    annotation_path = os.path.join(caption_dir, f"{stem}.txt")
+
+    mask_candidates = [
+        os.path.join(mask_dir, f"{stem}.png"),
+        os.path.join(mask_dir, f"{stem}.jpg"),
+        os.path.join(mask_dir, f"{stem}.jpeg"),
+    ]
+    black_mask_path = next((p for p in mask_candidates if os.path.exists(p)), None)
+
+    return source_image_path, annotation_path, black_mask_path

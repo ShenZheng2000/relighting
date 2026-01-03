@@ -105,8 +105,11 @@ def create_json(num_images, prompt, output_path):
 def collect_valid_paths(root_dir, target_prefix, relight_type, skip_list):
     valid_image_paths = []
     for exp_folder in sorted(os.listdir(root_dir)):
-        if not exp_folder.startswith(target_prefix):
+
+        # if not exp_folder.startswith(target_prefix):
+        if (exp_folder != target_prefix) and (not exp_folder.startswith(target_prefix + "_seed")):
             continue
+
         subfolder = os.path.join(root_dir, exp_folder, relight_type)
         if not os.path.isdir(subfolder):
             continue
@@ -128,7 +131,8 @@ def main():
     args = parse_arguments()
     config = load_config(args)
 
-    dataset_tag = getattr(args, "dataset_tag", "v1")
+    # dataset_tag = getattr(args, "dataset_tag", "v1")
+    dataset_tag = getattr(args, "dataset_tag", "")
     skip_list = build_skip_list(dataset_tag)
 
     target_prefix = config.output_dir
