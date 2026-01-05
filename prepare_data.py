@@ -140,7 +140,8 @@ def main():
     prompt = relighting_prompt_versions[str(config.prompt_version)][relight_type]
 
     root_dir = "/home/shenzhen/Relight_Projects/relighting/outputs"
-    output_dir = f"/home/shenzhen/Datasets/relighting/{target_prefix}_{dataset_tag}/{relight_type}"
+    # output_dir = f"/home/shenzhen/Datasets/relighting/{target_prefix}_{dataset_tag}/{relight_type}"
+    output_dir = f"/home/shenzhen/Datasets/relighting/{target_prefix}{'_' + dataset_tag if dataset_tag else ''}/{relight_type}"
 
     save_base_train_A = os.path.join(output_dir, "train_A")
     save_relight_train_B = os.path.join(output_dir, "train_B")
