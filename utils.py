@@ -225,52 +225,32 @@ def load_config(args):
     return config
 
 def load_depth_map(subfolder_path, config, relight_id):
-    # if config.depth_mode == "filtered":
-    #     depth_path = os.path.join(subfolder_path, "pre_processing/depth_filtered.png")
-    #     depth_map = Image.open(depth_path).convert('RGB')
-    #     return Image.fromarray(np.hstack([np.array(depth_map), np.array(depth_map)]))
-
-    # elif config.depth_mode == "filtered_pad":
-    #     depth_path = os.path.join(subfolder_path, "pre_processing/depth_filtered_pad.png")
-    #     depth_map = Image.open(depth_path).convert('RGB')
-    #     return Image.fromarray(np.hstack([np.array(depth_map), np.array(depth_map)]))
-
-    # elif config.depth_mode == "raw":
-    #     depth_path = os.path.join(subfolder_path, "pre_processing/depth.png")
-    #     depth_map = Image.open(depth_path).convert('RGB')
-    #     return Image.fromarray(np.hstack([np.array(depth_map), np.array(depth_map)]))
-
-    if config.depth_mode in ["filtered", "filtered_pad", "raw"]:
+    # Only allow outpaint depth mode
+    if "outpaint" not in str(config.depth_mode):
         raise ValueError(
-            f"depth_mode={config.depth_mode} expects old per-subfolder layout (subfolder/pre_processing/*.png). "
-            "Use depth_mode containing 'outpaint' for flat layout."
+            f"depth_mode={config.depth_mode} not supported. "
+            "Only modes containing 'outpaint' are allowed."
         )
 
-    elif "outpaint" in config.depth_mode:
-    
-        # outpaint_folder = os.path.join("outpaint", config.output_dir, relight_id, os.path.basename(subfolder_path))
+    # subfolder_path can be:
+    #  - flat: "00000_00" (already a stem)
+    #  - spreeai: "/.../dataset/Adidas_R2_Men_Jackets_216" (folder path)
+    #  - spreeai: "Adidas_R2_Men_Jackets_216" (folder name)
+    stem = os.path.basename(subfolder_path.rstrip("/"))
 
-        stem = subfolder_path  # in flat mode, subfolder_path is actually the sample id stem
-        outpaint_folder = os.path.join("outpaint", config.output_dir, relight_id, stem)
+    outpaint_folder = os.path.join("outpaint", config.output_dir, relight_id, stem)
 
-        if config.relight_image_only:
-            # Load only the relight depth map.
-            relight_path = os.path.join(outpaint_folder, "depth_relight.png")
-            depth_map = Image.open(relight_path).convert('RGB')
-            return depth_map
-        else:
-            base_path = os.path.join(outpaint_folder, "depth_base.png")
-            relight_path = os.path.join(outpaint_folder, "depth_relight.png")
-
-            base = Image.open(base_path).convert('RGB')
-            relight = Image.open(relight_path).convert('RGB')
-            
-            assert base.size == relight.size, "Depth maps must have the same size!"
-            return Image.fromarray(np.hstack([np.array(base), np.array(relight)]))
-
+    if config.relight_image_only:
+        relight_path = os.path.join(outpaint_folder, "depth_relight.png")
+        return Image.open(relight_path).convert("RGB")
     else:
-        raise ValueError(f"Unknown depth_mode: {config.depth_mode}")
+        base_path = os.path.join(outpaint_folder, "depth_base.png")
+        relight_path = os.path.join(outpaint_folder, "depth_relight.png")
 
+        base = Image.open(base_path).convert("RGB")
+        relight = Image.open(relight_path).convert("RGB")
+        assert base.size == relight.size, "Depth maps must have the same size!"
+        return Image.fromarray(np.hstack([np.array(base), np.array(relight)]))
 
 def extract_background(prompt: str) -> str:
     # Find the index where "background" starts, ignoring case.

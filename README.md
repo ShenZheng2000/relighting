@@ -3,7 +3,7 @@
 # Introduction
 
 **Flux Outpainting**  
-We use the FLUX Fill pipeline to outpaint each source image twice: once using the base prompt (from dataset annotations) and once using a relighting prompt (e.g., candlelight). This reshapes the image to the desired resolution and adds rich background context for the relit version.
+We use the FLUX Fill pipeline to outpaint each source image twice: once using the base prompt (from dataset annotations) and once using a relighting prompt (e.g., golden_sunlight_1). This reshapes the image to the desired resolution and adds rich background context for the relit version.
 
 **Depth Estimation**  
 We then run depth estimation on both outpainted images to obtain depth maps for the base and relit views.
@@ -51,8 +51,8 @@ For example:
 
 ```
 relighting_prompts_6 = {
-    "candlelight_1": "Relit with warm candlelight in a dimly lit indoor setting, casting soft, flickering shadows and enveloping the subject in golden-orange tones to create a cozy, nostalgic mood."
     "noon_sunlight_1": "Relit with bright noon sunlight in a clear outdoor setting, casting soft natural shadows and surrounding the subject in crisp white light to create a clean, vibrant daytime mood."
+    "golden_sunlight_1": "Relit with warm golden sunlight during the late afternoon, casting gentle directional shadows and surrounding the subject in soft amber tones to create a calm, radiant mood.",
     # add more as needed.
 }
 ```
@@ -67,7 +67,7 @@ input_dir: /home/shenzhen/Datasets/dataset_with_garment_bigface_100
 
 You can use `shen_scripts/bigface_100.txt` to get these 100 images
 
-Expected dataset folder structure:
+Expected dataset folder structure (LEGACY / SpreeAI-style):
 ```
 dataset_with_garment_bigface_100/
 ├── 8seconds_men_shirts_034/
@@ -83,8 +83,17 @@ dataset_with_garment_bigface_100/
 └── ...
 ```
 
-(NOTE: if different dataset, run a separate face detector to get the N big face images!)
-Alternatively, sample random images using `shen_scripts/random_sample.py` or big face images using `shen_scripts/bigface_sample.py`
+Expected dataset folder structure (NEW / flat-style):
+```
+$dataset_name/
+├── caption/
+│   ├── 00000_00.txt
+├── fg_masks/
+│   ├── 00000_00.png
+├── image/
+│   ├── 00000_00.jpg
+└── ...
+```
 
 
 ## 5. Prepare Config
@@ -96,21 +105,16 @@ In your experiment config (e.g., `configs/exp_10_16.yaml`):
 
 ## 6. Run inference 
 
-For example, to run relighting using `candlelight_1` across 10 GPUs, each running 1 seeds:
+For example, to run relighting using `golden_sunlight_1` across 10 GPUs, each running 1 seeds:
 
-Run in terminal
+Run in terminal (LEGACY / SpreeAI-style):
 ```
-python inference.py --base_config configs/base_10_2.yaml --exp_config configs/exp_10_16.yaml --relight_type candlelight_1 --gpu 0 --seed_offset 0 --num_seeds 1 &
-python inference.py --base_config configs/base_10_2.yaml --exp_config configs/exp_10_16.yaml --relight_type candlelight_1 --gpu 1 --seed_offset 1 --num_seeds 1 &
-python inference.py --base_config configs/base_10_2.yaml --exp_config configs/exp_10_16.yaml --relight_type candlelight_1 --gpu 2 --seed_offset 2 --num_seeds 1 &
-python inference.py --base_config configs/base_10_2.yaml --exp_config configs/exp_10_16.yaml --relight_type candlelight_1 --gpu 3 --seed_offset 3 --num_seeds 1 &
-python inference.py --base_config configs/base_10_2.yaml --exp_config configs/exp_10_16.yaml --relight_type candlelight_1 --gpu 4 --seed_offset 4 --num_seeds 1 &
-python inference.py --base_config configs/base_10_2.yaml --exp_config configs/exp_10_16.yaml --relight_type candlelight_1 --gpu 5 --seed_offset 5 --num_seeds 1 &
-python inference.py --base_config configs/base_10_2.yaml --exp_config configs/exp_10_16.yaml --relight_type candlelight_1 --gpu 6 --seed_offset 6 --num_seeds 1 &
-python inference.py --base_config configs/base_10_2.yaml --exp_config configs/exp_10_16.yaml --relight_type candlelight_1 --gpu 7 --seed_offset 7 --num_seeds 1 &
-python inference.py --base_config configs/base_10_2.yaml --exp_config configs/exp_10_16.yaml --relight_type candlelight_1 --gpu 8 --seed_offset 8 --num_seeds 1 &
-python inference.py --base_config configs/base_10_2.yaml --exp_config configs/exp_10_16.yaml --relight_type candlelight_1 --gpu 9 --seed_offset 9 --num_seeds 1 &
-wait
+python inference.py --base_config configs/base_10_2.yaml --exp_config configs/exp_10_16.yaml --relight_type golden_sunlight_1 --gpu 0 --seed_offset 0 --num_seeds 1
+```
+
+OR, Run in terminal (NEW / flat-style):
+```
+python inference_spreeai.py --base_config configs/base_10_2.yaml --exp_config configs/exp_10_16.yaml --relight_type golden_sunlight_1 --gpu 0 --seed_offset 0 --num_seeds 1
 ```
 
 All images will be saved in `outputs/`
@@ -124,7 +128,7 @@ Run the following command in the terminal
 
 NOTE: same config as above, but please update `root_dir` and `output_dir` in `prepare_data.py`
 ```
-python prepare_data.py --base_config configs/base_10_2.yaml --exp_config configs/exp_10_16.yaml --relight_type candlelight_1 --gpu 0
+python prepare_data.py --base_config configs/base_10_2.yaml --exp_config configs/exp_10_16.yaml --relight_type golden_sunlight_1 --gpu 0
 ```
 
 The script above will:
@@ -134,7 +138,7 @@ The script above will:
 
 ### Example Dataset Structure
 ```
-/home/shenzhen/Datasets/relighting/exp_10_16/candlelight_1
+/home/shenzhen/Datasets/relighting/exp_10_16/golden_sunlight_1
 ├── train_A
 │ ├── 0.png
 │ ├── 1.png
@@ -217,14 +221,14 @@ Run in terminal:
 python warp_dataset.py \
     --input_root /home/shenzhen/Datasets/relighting \
     --target_prefix exp_10_16 \
-    --relight_type candlelight_1 \
+    --relight_type golden_sunlight_1 \
     --bw 128 \
     --include-eyes
 ```
 
 ### Example Dataset Structure (Warped Images)
 ```
-/home/shenzhen/Datasets/relighting/exp_10_16_warped_128/candlelight_1
+/home/shenzhen/Datasets/relighting/exp_10_16_warped_128/golden_sunlight_1
 ├── train_A
 │ ├── 0.png
 │ ├── 0.inv.pth
