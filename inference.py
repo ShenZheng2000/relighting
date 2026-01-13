@@ -34,7 +34,8 @@ from utils import (
     extract_foreground,
     process_depth_map,
     resize_mask_to_canvas,
-    resolve_flat_paths
+    resolve_flat_paths,
+    apply_background_override
 )
 
 
@@ -95,6 +96,8 @@ def run_outpainting(subfolder_path, config, pipe_outpaint, outpaint_prompts, dep
 
     with open(annotation_path, "r") as f:
         base_prompt = f.read().strip()
+
+    base_prompt = apply_background_override(base_prompt, config)
     
     if config.extract_bg_from_base_prompt:
         base_prompt = extract_background(base_prompt)
@@ -241,10 +244,12 @@ def process_subfolder_inference(subfolder_path, config, pipe_inference, prompts)
         print(f"Skipping inference for {stem} due to missing image/caption.")
         return
 
-
     source_image = Image.open(source_image_path).convert('RGB')
+
     with open(annotation_path, "r") as f:
         base_prompt = f.read().strip()
+    
+    base_prompt = apply_background_override(base_prompt, config)
 
     if config.extract_fg_from_base_prompt_for_generation:
         base_prompt = extract_foreground(base_prompt)

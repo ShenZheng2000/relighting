@@ -221,6 +221,7 @@ def load_config(args):
     config.gpu = args.gpu
     config.output_dir = os.path.splitext(os.path.basename(args.exp_config))[0]
     config.dataset_tag = args.dataset_tag
+    config.background_override_text = getattr(config, "background_override_text", "")
     print(OmegaConf.to_yaml(config))
     return config
 
@@ -396,3 +397,14 @@ def resolve_flat_paths(config, stem):
     black_mask_path = next((p for p in mask_candidates if os.path.exists(p)), None)
 
     return source_image_path, annotation_path, black_mask_path
+
+
+def apply_background_override(prompt: str, config):
+    if not getattr(config, "background_override_text", ""):
+        return prompt
+
+    idx = prompt.lower().find("background")
+    if idx == -1:
+        return prompt.rstrip(",. ") + ", " + config.background_override_text
+
+    return prompt[:idx].rstrip(",. ") + ", " + config.background_override_text
