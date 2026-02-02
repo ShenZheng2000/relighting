@@ -22,8 +22,8 @@ from utils import relighting_prompt_versions  # make sure it's imported
 # Import your utilities and pipelines.
 from diffusers import FluxFillPipeline
 from utils import (
-    relighting_prompts,              # For inference (t2i) prompts.
-    relighting_prompts_2,            # For outpainting prompts.
+    # relighting_prompts,              # For inference (t2i) prompts.
+    # relighting_prompts_2,            # For outpainting prompts.
     concat_images_side_by_side,
     parse_arguments,
     load_config,
@@ -186,21 +186,6 @@ def run_outpainting(subfolder_path, config, pipe_outpaint, outpaint_prompts, dep
     return base_no_path, relight_path
 
 
-
-# def run_outpainting_loop(config, pipe_outpaint, outpaint_prompts, depth_model, use_v2):
-#     """
-#     Loops over subfolders in the input directory to run outpainting.
-#     """
-#     count = 0
-#     for subfolder in sorted(os.listdir(config.input_dir)):
-#         subfolder_path = os.path.join(config.input_dir, subfolder)
-#         if os.path.isdir(subfolder_path):
-#             run_outpainting(subfolder_path, config, pipe_outpaint, outpaint_prompts, depth_model, use_v2)
-#             count += 1
-#             if config.max_images and count >= config.max_images:
-#                 print(f"Reached max_images limit: {config.max_images}. Stopping outpainting.")
-#                 return
-
 def run_outpainting_loop(config, pipe_outpaint, outpaint_prompts, depth_model, use_v2):
     """
     Flat layout: loop over root/image/* and use stem as sample id.
@@ -322,20 +307,6 @@ def process_subfolder_inference(subfolder_path, config, pipe_inference, prompts)
     concatenated_image.save(output_path)
     print(f"Saved final inference image: {output_path}")
 
-# def run_inference_loop(config, pipe_inference, prompts):
-#     """
-#     Loops over subfolders in the input directory to run inference.
-#     """
-#     count = 0
-#     for subfolder in sorted(os.listdir(config.input_dir)):
-#         subfolder_path = os.path.join(config.input_dir, subfolder)
-#         if os.path.isdir(subfolder_path):
-#             process_subfolder_inference(subfolder_path, config, pipe_inference, prompts)
-
-#             count += 1
-#             if config.max_images and count >= config.max_images:
-#                 print(f"Reached max_images limit: {config.max_images}. Stopping inference.")
-#                 return
 
 def run_inference_loop(config, pipe_inference, prompts):
     """

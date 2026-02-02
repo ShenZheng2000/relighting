@@ -1,4 +1,4 @@
-ginput_dir: "/home/shenzhen/Datasets/VITON/train_debug_start_100_end_200"
+input_dir: "/home/shenzhen/Datasets/VITON/train_debug_start_100_end_200"
 max_images: null # TODO: return to null for full dataset
 
 # NOTE: set this one to false

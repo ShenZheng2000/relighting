@@ -27,8 +27,8 @@ from utils import relighting_prompt_versions  # make sure it's imported
 # Import your utilities and pipelines.
 from diffusers import FluxFillPipeline
 from utils import (
-    relighting_prompts,              # For inference (t2i) prompts.
-    relighting_prompts_2,            # For outpainting prompts.
+    # relighting_prompts,              # For inference (t2i) prompts.
+    # relighting_prompts_2,            # For outpainting prompts.
     concat_images_side_by_side,
     parse_arguments,
     load_config,
