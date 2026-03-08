@@ -1,0 +1,14 @@
+input_dir: "/ssd0/shenzhen/Datasets/depth/workzone_segm/pittsburgh"
+
+# T2I Parameters
+height: 1024
+width: 1024
+cfg: 10
+
+# NOTE: no need, but let's keep these, or set to false 
+# depth_mode: outpaint # depth_mode: raw
+upper_crop: false
+
+
+# Debugging
+max_images: 10  # Set to a number for debugging, otherwise leave null if unlimited

@@ -32,6 +32,7 @@ extract_fg_from_base_prompt_for_generation: false
 
 # Set to a non-empty string to override background description
 background_override_text: "" 
+center_crop: false
 
 # Debugging
 max_images: null  # Set to a number for debugging, otherwise leave null if unlimited

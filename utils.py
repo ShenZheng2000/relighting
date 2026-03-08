@@ -424,3 +424,29 @@ def apply_background_override(prompt: str, config):
         return prompt.rstrip(",. ") + ", " + config.background_override_text
 
     return prompt[:idx].rstrip(",. ") + ", " + config.background_override_text
+
+
+def tile_2x1_pil(img: Image.Image) -> Image.Image:
+    w, h = img.size
+    out = Image.new(img.mode, (w * 2, h))
+    out.paste(img, (0, 0))
+    out.paste(img, (w, 0))
+    return out
+
+
+def center_crop_pil(img: Image.Image, target_w: int, target_h: int) -> Image.Image:
+    """
+    Center-crop to (target_w, target_h). If img is smaller, first resize up preserving aspect.
+    Minimal + robust.
+    """
+    w, h = img.size
+    if w < target_w or h < target_h:
+        scale = max(target_w / w, target_h / h)
+        new_w = int(round(w * scale))
+        new_h = int(round(h * scale))
+        img = img.resize((new_w, new_h), Image.BICUBIC)
+        w, h = img.size
+
+    left = (w - target_w) // 2
+    top = (h - target_h) // 2
+    return img.crop((left, top, left + target_w, top + target_h))
