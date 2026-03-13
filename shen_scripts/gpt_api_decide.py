@@ -12,8 +12,8 @@ from utils import relighting_prompts_6
 client = openai.OpenAI()
 
 # Root folder to search recursively
-root_dir = "/home/shenzhen/Relight_Projects/relighting/outputs/exp_10_16_seed0"
-relight_type = "moonlight_1"
+root_dir = "/home/shenzhen/Relight_Projects/relighting/outputs/exp_1_10_1_v2_seed0"
+relight_type = "golden_sunlight_1"
 model_name = 'gpt-4o' # this is ok
 # model_name = "gpt-4.1" # this is ok
 # model_name = "gpt-4.1-mini" # this is too bad!
