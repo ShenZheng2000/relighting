@@ -9,179 +9,18 @@ import numpy as np
 from image_gen_aux import DepthPreprocessor
 from PIL import ImageOps
 
-# depth_processor = DepthPreprocessor.from_pretrained("LiheYoung/depth-anything-large-hf")
-
-# # NOTE: hardcoded prompts
-# relighting_prompts = {
-#     "golden_hour": "Relit by warm, golden-hour sunlight filtering through the trees, casting long, soft-edged shadows and creating a dreamy, atmospheric glow.",
-#     "moonlight": "Relit by soft, bluish moonlight streaming through an open window, casting gentle, diffused shadows and creating a serene, nighttime ambiance.",
-#     "noon_sunlight": "Relit by bright, overhead noon sunlight, creating strong, well-defined shadows with high contrast and a crisp, sharp atmosphere.",
-#     "neon_lights": "Relit by vibrant neon signs reflecting off wet pavement, casting colorful, dynamic glows in shades of pink, blue, and purple, creating a futuristic cyberpunk mood.",
-#     "candlelight": "Relit by flickering candlelight, casting soft, warm, golden hues with gentle, moving shadows, creating an intimate and cozy ambiance.",
-#     "spotlight": "Relit by a harsh, focused spotlight, creating extreme contrast with bright highlights and deep, sharp-edged shadows.",
-#     "thunderstorm": "Relit by flashes of lightning in a dark storm, creating dramatic, high-contrast illumination with deep shadows and eerie blue highlights.",
-#     "meteor_shower": "Relit by streaking meteors across the night sky, casting fleeting, dynamic glows with shifting highlights and deep cosmic shadows.",
-#     "volcanic_glow": "Relit by the fiery red-orange glow of molten lava, casting intense, flickering shadows with deep contrast and an apocalyptic atmosphere.",
-#     "foggy_morning": "Relit by soft, diffused morning light filtering through thick fog, muting colors and softening edges to create an ethereal, mysterious ambiance.",
-# }
-
-# # NOTE: I make the prompt longer (more details and more concret objects), and use relit instead of Relit (though it should not matter) => suitable for outpainting
-
-# relighting_prompts_2 = {
-#     "golden_hour": "relit by warm, golden-hour sunlight streaming through tall oak trees in a tranquil park, highlighting patches of wildflowers and casting long, soft-edged shadows across the grassy ground, creating a dreamy, atmospheric glow.",
-#     "noon_sunlight": "relit by bright, overhead noon sunlight blazing over a lively urban plaza, sharply defining every corner with crisp shadows and vivid highlights on modern glass and concrete structures, creating a dynamic and energetic daytime scene.",
-#     "neon_lights": "relit by vibrant neon lights reflecting off rain-slicked city streets, where electric hues of pink, blue, and purple burst from storefronts and billboards, bathing the surroundings in a futuristic, cyberpunk glow.",
-#     "candlelight": "relit by the gentle flicker of candlelight in an intimate setting, where warm amber tones softly dance over rustic wooden surfaces and delicate fabrics, creating a cozy, nostalgic ambiance filled with quiet charm.",
-#     "foggy_morning": "relit by the soft, diffused light of an early foggy morning in a quiet countryside, where gentle rays pierce through a thick mist over dew-covered fields and ancient trees, creating a serene, dreamlike atmosphere.",
-#     "moonlight": "relit by soft, bluish moonlight filtering through an open window framed by gently swaying curtains, casting pale, silvery light across worn wooden floorboards, scattered books, and the edge of a cozy armchair, creating a serene, nighttime glow filled with quiet stillness.",
-# }
-
-# # NOTE: indoor scenes
-# relighting_prompts_3 = {
-#     "golden_hour": "relit by warm, golden-hour sunlight streaming through a living room window, casting long, soft-edged shadows across wooden floors and gently illuminating cozy furniture, creating a calm, atmospheric glow.",
-#     "noon_sunlight": "relit by bright noon sunlight pouring through large apartment windows, creating sharp, well-defined shadows on white walls and highlighting indoor plants and shelves, adding energy to the quiet space.",
-#     "neon_lights": "relit by colorful neon lights from signs outside a downtown apartment, casting pink, blue, and purple glows across a modern interior with glass tables and framed artwork, creating a futuristic, urban ambiance.",
-#     "candlelight": "relit by the gentle flicker of candlelight in a dimly lit room, where warm amber tones dance over bookshelves, soft cushions, and old wooden furniture, creating a cozy and nostalgic atmosphere.",
-#     "foggy_morning": "relit by soft, diffused morning light seeping through sheer curtains in a quiet bedroom, muting colors and softening edges of the bed, rug, and potted plants, creating a peaceful, dreamlike indoor scene.",
-#     "moonlight": "relit by soft, bluish moonlight filtering through a bedroom window, casting pale shadows across the bed, nightstand, and curtains, filling the space with a serene and quiet nighttime mood.",
-# }
-
-# # NOTE: extremely simplified 
-# relighting_prompts_4 = {
-#     "golden_hour": "relit by golden-hour sunlight.",
-#     "noon_sunlight": "relit by bright noon sunlight.",
-#     "neon_lights": "relit by colorful neon lights.",
-#     "candlelight": "relit by warm candlelight.",
-#     "foggy_morning": "relit by diffused foggy morning light.",
-#     "moonlight": "relit by soft moonlight.",
-# }
-
-# # NOTE: explicitly mention the relighting direction => not working
-# relighting_prompts_5 = {
-#     "golden_hour_front": "Relit by golden-hour sunlight shining directly on the subject's face, illuminating the front evenly.",
-#     "golden_hour_side": "Relit by golden-hour sunlight coming from the side, casting soft shadows across the subject's face.",
-#     "golden_hour_back": "Relit by golden-hour sunlight coming from behind the subject, creating a warm rim light around the hair and shoulders.",
-# }
-
 relighting_prompts_6 = {
-    # NOTE: these prompts looks good!!!
-    # "golden_hour_back": "relit with golden-hour sunlight from behind, face in shadow, rim glow",
-    # "golden_hour_side": "relit with golden-hour sunlight from the side, one side lit, one side shadowed",
-    # "golden_hour_front": "relit with golden-hour sunlight from the front, face fully lit, no shadows",
-
     "noon_sunlight_1": "Relit with bright noon sunlight in a clear outdoor setting, casting soft natural shadows and surrounding the subject in crisp white light to create a clean, vibrant daytime mood.",
     "golden_sunlight_1": "Relit with warm golden sunlight during the late afternoon, casting gentle directional shadows and surrounding the subject in soft amber tones to create a calm, radiant mood.",
     "foggy_1": "Relit with dense fog in a muted outdoor setting, casting soft diffused shadows and surrounding the subject in pale gray light to create a quiet, atmospheric mood.",
     "moonlight_1": "Relit with cold moonlight in a minimalist nighttime scene, casting crisp soft shadows and bathing the subject in icy blue highlights to create a tranquil, distant mood.",
-
-    # TODO: if still not good, think revise until we get a good one! 
-    "fireglow_6": "Relit with bright fire-glow lighting in a warm indoor setting, casting soft directional shadows and bathing the subject in vibrant red and amber light to create a radiant, intense mood.",
-    
-    "fireglow_5": "Relit with localized fire-glow lighting in a softly illuminated setting, casting gentle directional shadows and bathing the subject in deep red highlights to create a warm, cinematic mood.",
-    "fireglow_4": "Relit with localized fire-glow lighting in a softly illuminated setting, casting gentle directional shadows and accented with deep red highlights to create a warm, cinematic mood.",
-    "fireglow_3": "Relit with fire-glow lighting in a softly illuminated setting, casting gentle directional shadows and accented with deep red highlights to create a warm, cinematic mood.",
-    "fireglow_2": "Relit with fire-glow lighting in a softly illuminated setting, casting gentle directional shadows and surrounding the subject in soft red tones to create a warm, cinematic mood.",
-    "ember_fireglow_2": "Relit with warm ember fire-glow lighting in a softly illuminated setting, casting gentle directional shadows and surrounding the subject in soft orange-amber tones to create a warm, cinematic mood.",
-    
-    # "spotlight_4": "Relit with a bright focused spotlight directly illuminating the subject at high intensity, surrounding the subject in subdued darkness, casting strong directional shadows to create a sharp, high-contrast mood.",
-    # "spotlight_3": "Relit with a bright focused spotlight in a simple setting, casting strong directional shadows and surrounding the subject in subdued darkness to create a sharp, high-contrast mood.",
-    # "spotlight_2": "Relit with a bright focused spotlight in a simple setting, casting strong directional shadows and lighting the subject intensely while the surroundings fall into muted shadow to create a sharp, high-contrast mood.", 
-    # "spotlight_1": "Relit with a bright focused spotlight in a simple setting, casting strong directional shadows and surrounding the subject in clean white light to create a sharp, high-contrast mood.",
-
-    "candlelight_1": "Relit with warm candlelight in a dimly lit indoor setting, casting soft, flickering shadows and enveloping the subject in golden-orange tones to create a cozy, nostalgic mood.",
-    "spotlight_1": "Relit with a concentrated bright beam in an indoor stage scene, casting smooth directional shadows and fully lighting the subject to create a sharp, center-highlighted mood.",
-    "neon_streetlight_1": "Relit with vibrant neon streetlights in a lively outdoor setting, casting colorful pink and blue reflections and surrounding the subject with soft glowing edges to create a modern, cyberpunk mood.",
-    "dappled_sunlight_1": "Relit with dappled sunlight softened by humid air, casting diffused warm blotches of light and surrounding the subject in hazy golden tones to create a gentle, atmospheric mood.",
-    
-    # NOTE: this is too simple, no need to do for now. 
-    # "dusk_backlit_1": "Relit with dramatic dusk backlighting after sunset, casting the subject into a dark silhouette while the sky fades from pale blue to deep indigo.",
-    
-    # "twilight_sky_1": "Relit with gentle blue-hour twilight after sunset, casting smooth diffused shadows and enveloping the subject in soft desaturated blue-gray tones to create a quiet, serene mood.",
-    # "morning_sunlight_1": "Relit with soft early-morning sunlight in a fresh outdoor setting, casting gentle short shadows and surrounding the subject in pale yellow-white tones to create a clean, lightweight mood.",
-
-    # "dusk_backlit_2": "Relit with dusk backlighting just before sunset, placing the subject in deep shadow against a softly illuminated blue-gradient evening sky.",
-    # "dusk_backlit_3": "Relit with strong backlighting at dusk, rendering the subject mostly as a silhouette against a cool blue twilight sky with a faint horizon glow.",
-    # "dusk_backlit_4": "Relit with dramatic dusk backlighting after sunset, casting the subject into a dark silhouette while the sky fades from pale blue to deep indigo.",
-    # "dusk_backlit_5":"Relit with extreme dusk backlighting, fully silhouetting the subject against a fading blue-to-black twilight sky.",
-
-    # "twilight_sky_2": "Relit with early evening twilight shortly after sunset, casting very soft low-contrast shadows and surrounding the subject in muted cool-gray tones to create a calm, transitional mood.",
-    # "twilight_sky_3": "Relit with gentle blue-hour twilight after sunset, casting smooth diffused shadows and enveloping the subject in soft desaturated blue-gray tones to create a quiet, serene mood.",
-    # "twilight_sky_4": "Relit with late twilight as the sky darkens, casting subtle directional shadows and surrounding the subject in cool slate-blue tones to create a subdued, contemplative mood.",
-    # "twilight_sky_5": "Relit with hazy twilight under thin clouds after sunset, casting softly glowing diffused shadows and enveloping the subject in pale lavender-gray tones to create a gentle, dreamy mood.",
-
-    # "morning_sunlight_2": "Relit with soft early-morning sunlight in a fresh outdoor setting, casting gentle short shadows and surrounding the subject in pale yellow-white tones to create a clean, lightweight mood.",
-    # "morning_sunlight_3": "Relit with cool early-morning sunlight after dawn, casting crisp bluish-tinted shadows and enveloping the subject in clear cool-white tones to create a brisk, awakened mood.",
-    # "morning_sunlight_4": "Relit with bright rising-morning sunlight in an open outdoor scene, casting clear forward shadows and surrounding the subject in neutral pale-yellow light to create a vibrant, energetic mood.",
-    # "morning_sunlight_5": "Relit with hazy morning sunlight through thin mist, casting diffused glowing shadows and enveloping the subject in soft creamy-white tones to create a gentle, dreamy mood.",
-    # "morning_sunlight_6": "Relit with angled low-morning sunlight just above the horizon, casting long cool-edged shadows and surrounding the subject in fresh pale-gold highlights to create a dynamic, crisp mood.",
-    # "morning_sunlight_7": "Relit with filtered morning sunlight through light foliage, casting delicate dappled cool-warm patches and surrounding the subject in soft neutral tones to create a natural, refreshing mood."
-
-    # "dappled_sunlight_2": "Relit with gentle dappled sunlight from early-morning foliage, casting soft rounded patches of light and enveloping the subject in warm subdued tones to create a calm, natural mood.",
-    # "dappled_sunlight_3": "Relit with dappled sunlight under sparse foliage, casting broad warm patches of light and surrounding the subject in softly shifting golden tones to create an airy, textured mood.",
-    # "dappled_sunlight_4": "Relit with dappled sunlight through dense summer leaves, casting small bright flecks of light and enveloping the subject in rich warm tones to create a vivid, patterned mood.",
-    # "dappled_sunlight_5": "Relit with dappled sunlight filtered by gently moving branches, casting dynamic drifting highlights and bathing the subject in warm natural tones to create an animated, lively mood.",
-    # "dappled_sunlight_7": "Relit with dappled sunlight from low afternoon sun, casting angled warm fragments of light and enveloping the subject in glowing orange tones to create a dramatic, textured mood.",
-    # "dappled_sunlight_8": "Relit with dappled sunlight softened by humid air, casting diffused warm blotches of light and surrounding the subject in hazy golden tones to create a gentle, atmospheric mood.",
-
-    # "overcast_daylight_2": "Relit with diffused overcast daylight in a quiet outdoor setting, casting subtle soft shadows and enveloping the subject in cool grayish light to create a smooth, balanced mood.",
-    # "overcast_daylight_3": "Relit with diffused overcast daylight in a quiet outdoor setting, casting gentle muted shadows and surrounding the subject in soft grayish tones to create a calm, balanced mood.",
-    # "overcast_daylight_4": "Relit with diffused overcast daylight in a quiet outdoor setting, casting faint natural shadows and enveloping the subject in cool neutral light to create a smooth, understated mood.",
-    # "overcast_daylight_5": "Relit with diffused overcast daylight in a quiet outdoor setting, casting subtle even shadows and bathing the subject in cool muted tones to create a gentle, natural mood.",
-    # "overcast_daylight_6": "Relit with diffused overcast daylight in a quiet outdoor setting, casting soft uniform shadows and enveloping the subject in light gray illumination to create a smooth, tranquil mood.",
-    # "overcast_daylight_7": "Relit with diffused overcast daylight in a quiet outdoor setting, casting barely visible shadows and enveloping the subject in cool gentle tones to create a clean, balanced mood.",
-
-    # "window_light_2": "Relit with soft morning window light in a calm indoor setting, casting gentle angled shadows and surrounding the subject in cool pale highlights to create a fresh, peaceful mood.",
-    # "window_light_3": "Relit with warm afternoon window light in a cozy indoor setting, casting smooth directional shadows and enveloping the subject in soft golden tones to create a relaxed, inviting mood.",
-    # "window_light_4": "Relit with bright midday window light in a clean indoor setting, casting crisp natural shadows and wrapping the subject in clear white highlights to create a vivid, balanced mood.",
-    # # "window_light_5": "Relit with diffused cloudy window light in a muted indoor setting, casting faint soft shadows and surrounding the subject in gentle grayish tones to create a quiet, subdued mood.",
-    # "window_light_6": "Relit with sharp low-angle window light in a minimalist indoor setting, casting long defined shadows and bathing the subject in warm orange highlights to create a dramatic, intimate mood.",
-    # "window_light_7": "Relit with filtered curtain window light in a delicate indoor setting, casting soft patterned shadows and enveloping the subject in pale diffused glow to create a tender, dreamy mood.",
-    # "window_light_8": "Relit with cool twilight window light in a dim indoor setting, casting subtle soft shadows and surrounding the subject in gentle bluish tones to create a calm, contemplative mood.",
-    # "window_light_9": "Relit with bright snowy window light in a serene indoor setting, casting crisp diffused shadows and bathing the subject in clean cool highlights to create a pure, tranquil mood.",
-
-    # "moonlight_2": "Relit with cool moonlight in a calm outdoor night setting, casting soft directional shadows and surrounding the subject in faint bluish tones to create a serene, contemplative mood.",
-    # "moonlight_3": "Relit with pale moonlight under a clear night sky, casting subtle elongated shadows and enveloping the subject in gentle silvery tones to create a quiet, dreamlike mood.",
-    # "moonlight_4": "Relit with cold moonlight in a minimalist nighttime scene, casting crisp soft shadows and bathing the subject in icy blue highlights to create a tranquil, distant mood.",
-    # "moonlight_5": "Relit with soft lunar glow through thin clouds, casting diffused shadows and wrapping the subject in misty bluish-gray tones to create a calm, ethereal mood.",
-    # "moonlight_6": "Relit with moonlight reflected off water in a nocturnal setting, casting shimmering highlights and surrounding the subject in cool silver tones to create a poetic, reflective mood.",
-    # "moonlight_7": "Relit with high moonlight above open terrain, casting sharp angled shadows and illuminating the subject with pale spectral light to create a cinematic, mysterious mood.",
-    # "moonlight_8": "Relit with moonlight filtered through forest leaves, casting delicate dappled shadows and surrounding the subject in muted twilight tones to create a natural, intimate mood.",
-    # "moonlight_9": "Relit with intense full moon glow on a clear night, casting deep contrasting shadows and enveloping the subject in luminous icy-blue light to create a dramatic, haunting mood."
-
-    # "foggy_2": "Relit with dense fog in a muted outdoor setting, casting soft diffused shadows and surrounding the subject in pale gray light to create a quiet, atmospheric mood.",
-    # "foggy_3": "Relit with gentle fog in an open outdoor scene, blurring distant details and enveloping the subject in cool misty tones to create a calm, subdued mood.",
-    # "foggy_4": "Relit with low-hanging fog in a still outdoor setting, softening edges and surrounding the subject in flat white light to create a muted, tranquil mood.",
-    # "foggy_5": "Relit with drifting fog in a quiet exterior space, reducing contrast and covering the subject in pale neutral tones to create a soft, contemplative mood.",
-    # "foggy_6": "Relit with light fog in a natural outdoor environment, smoothing highlights and bathing the subject in diffuse gray light to create a relaxed, dreamy mood.",
-    # "foggy_7": "Relit with cool fog in a calm outdoor scene, fading background clarity and surrounding the subject with subdued gray haze to create an understated, immersive mood.",
-    # "foggy_8": "Relit with heavy mist in a muted outdoor landscape, flattening shadows and enveloping the subject in soft diffused light to create a serene, atmospheric mood.",
-    # "foggy_9": "Relit with rolling fog in a quiet open setting, dimming distant shapes and surrounding the subject in soft pale tones to create a peaceful, hazy mood."
-
-    # "spotlight_2": "Relit with a bright centered spotlight in an indoor stage setting, casting focused contour shadows and lighting the subject with strong front highlights to create a vivid, performance-like mood.",
-    # "spotlight_3": "Relit with a concentrated studio spotlight in an indoor setting, casting crisp directional shadows and isolating the subject with clear front illumination to create a bold, stage-focused mood.",
-    # "spotlight_4": "Relit with a high-impact stage spotlight in a controlled indoor scene, casting defined contour shadows and brightly highlighting the subject to create a powerful, center-stage mood.",
-    # "spotlight_5": "Relit with a focused performance spotlight in an indoor venue, casting clean directional shadows and strongly illuminating the subject to create a sharp, concert-style mood.",
-    # "spotlight_6": "Relit with a single-beam center spotlight in an indoor stage setting, casting gentle contour shadows and bright front lighting to keep the subject clearly visible in a dramatic, show-like mood."
-
-    # "spotlight_7": "Relit with a bright center-beam spotlight in an indoor stage setting, casting soft contour shadows and fully illuminating the subject's face and body to create a vivid, show-like mood.",
-    # "spotlight_8": "Relit with a strong front-facing spotlight in a performance-style indoor scene, casting clean directional shadows and lighting the subject with full, even highlights to create a clear, center-stage mood.",
-    # "spotlight_9": "Relit with an intense centered spotlight in an indoor venue, casting natural contour shadows and brightly revealing the subject to create a bold, high-visibility stage mood.",
-    # "spotlight_10": "Relit with a bright focused beam in an indoor stage environment, casting gentle shaping shadows and lighting the subject with strong frontal illumination to create a polished, spotlight-centered mood.",
-    # "spotlight_11": "Relit with a powerful front spotlight in an indoor concert-style setting, casting subtle contour shadows and clearly lighting the subject's features to create a crisp, high-impact mood.",
-    # "spotlight_12": "Relit with a concentrated bright beam in an indoor stage scene, casting smooth directional shadows and fully lighting the subject to create a sharp, center-highlighted mood.",
 
 }
 
 
 # Register available prompt versions
 relighting_prompt_versions = {
-    # "1": relighting_prompts, # default one. no need to specify in config
-    # "2": relighting_prompts_2,
-    # "3": relighting_prompts_3,
-    # "4": relighting_prompts_4, 
-    # "5": relighting_prompts_5,
     "6": relighting_prompts_6,
-    # Add future versions like "4": relighting_prompts_4 here
 }
 
 
@@ -223,8 +62,21 @@ def parse_arguments():
     parser.add_argument('--num_seeds', type=int, default=1)
     parser.add_argument('--seed_offset', type=int, default=0, help='Starting seed value (default is 0)')
 
-    # ✅ ADD THIS (dataset version selector)
-    parser.add_argument("--dataset_tag", type=str, default="", help="controls skip_list version and (optionally) output folder naming")
+    # NOTE: parse args for prepare data only. 
+    parser.add_argument("--root_dir", type=str,
+        default="/home/shenzhen/Relight_Projects/relighting/outputs",
+        help="Root directory containing relighting outputs")
+
+    parser.add_argument("--output_base", type=str,
+        default="/ssd0/shenzhen/Datasets/relighting",
+        help="Base directory for saving prepared dataset")
+
+    parser.add_argument("--train_ratio", type=float, default=0.8,
+        help="Train split ratio")
+
+    parser.add_argument("--img_dim", type=int, default=784,
+        help="Crop size for base/relight images")
+
 
     return parser.parse_args()
 
@@ -236,7 +88,6 @@ def load_config(args):
     config.relight_type = args.relight_type
     config.gpu = args.gpu
     config.output_dir = os.path.splitext(os.path.basename(args.exp_config))[0]
-    config.dataset_tag = args.dataset_tag
     config.background_override_text = getattr(config, "background_override_text", "")
     print(OmegaConf.to_yaml(config))
     return config
