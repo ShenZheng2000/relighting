@@ -1,6 +1,0 @@
-# NOTE: this is same as exp_10_16, but filtered bad seeds in other operations 
-input_dir: "/home/shenzhen/Datasets/dataset_with_garment_bigface_100"
-max_images: null # NOTE: return to null for full dataset
-
-# NOTE: set this one to false
-upper_crop: false # upper_crop: false

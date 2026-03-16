@@ -1,5 +1,0 @@
-input_dir: "/home/shenzhen/Datasets/street_tryon/validation_big_sample_100"
-max_images: null # TODO: return to null for full dataset
-
-# NOTE: set this one to false
-upper_crop: false # upper_crop: false
