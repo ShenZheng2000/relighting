@@ -22,8 +22,6 @@ from utils import relighting_prompt_versions  # make sure it's imported
 # Import your utilities and pipelines.
 from diffusers import FluxFillPipeline
 from utils import (
-    # relighting_prompts,              # For inference (t2i) prompts.
-    # relighting_prompts_2,            # For outpainting prompts.
     concat_images_side_by_side,
     parse_arguments,
     load_config,
@@ -50,18 +48,6 @@ def run_outpainting(subfolder_path, config, pipe_outpaint, outpaint_prompts, dep
     Optionally saves depth maps if config.save_depth_maps is True.
     Returns paths to the base and relight outpainted images.
     """
-    # # Collect required files.
-    # annotation_files = glob.glob(os.path.join(subfolder_path, "*.txt"))
-    # image_files = glob.glob(os.path.join(subfolder_path, "bdy_*"))
-    # mask_files = glob.glob(os.path.join(subfolder_path, "pre_processing/body_mask/*.png"))
-
-    # if len(annotation_files) == 0 or len(image_files) == 0 or len(mask_files) == 0:
-    #     print(f"Skipping {subfolder_path} due to missing annotation/image/mask.")
-    #     return None, None
-
-    # annotation_path = annotation_files[0]
-    # source_image_path = image_files[0]
-    # body_mask_rgba_path = mask_files[0]
 
     # Flat layout: subfolder_path is actually a stem like "00000_00"
     stem = subfolder_path
@@ -71,24 +57,8 @@ def run_outpainting(subfolder_path, config, pipe_outpaint, outpaint_prompts, dep
         print(f"Skipping {stem} due to missing image/caption/mask.")
         return None, None    
 
-
-    # # NOTE: decide to use original or grounded sam2 mask
-    # if config.use_groundedsam2:
-    #     black_mask_path = os.path.join(subfolder_path, "pre_processing/black_fg_mask_groundedsam2.png")
-    # else:
-    #     black_mask_path = os.path.join(subfolder_path, "pre_processing/black_fg_mask.png")
-
-    # if os.path.exists(black_mask_path):
-    #     print("Skipping mask processing; using existing masks.")
-    #     body_mask = Image.open(black_mask_path).convert("L")
-    # else:
-    #     # _, black_mask_path = process_body_mask(body_mask_rgba_path, white_mask_path)
-    #     black_mask_path = process_body_mask(body_mask_rgba_path, black_mask_path)
-    #     body_mask = Image.open(black_mask_path).convert("L")
-
     # Flat layout: fg mask is already prepared and stored in root/fg_masks/{stem}.png
     body_mask = Image.open(black_mask_path).convert("L")
-
 
 
     # Load source image and annotation.
@@ -179,10 +149,6 @@ def run_outpainting(subfolder_path, config, pipe_outpaint, outpaint_prompts, dep
         process_depth_map(relight_path, depth_relight_path, depth_model, use_v2=config.use_depthanythingv2)
         # print("Saved depth maps.")
 
-        # Replace relight foreground depth with base foreground depth if enabled.
-        if config.copy_fg_depth:
-            raise NotImplementedError("copy_fg_depth is not implemented yet.")
-
     return base_no_path, relight_path
 
 
@@ -236,10 +202,6 @@ def process_subfolder_inference(subfolder_path, config, pipe_inference, prompts)
     
     base_prompt = apply_background_override(base_prompt, config)
 
-    if config.extract_fg_from_base_prompt_for_generation:
-        base_prompt = extract_foreground(base_prompt)
-        # print("Extracted base_prompt foreground for generation:", base_prompt)
-
     # Build the final prompt.
     relight_id = config.relight_type
 
@@ -253,19 +215,11 @@ def process_subfolder_inference(subfolder_path, config, pipe_inference, prompts)
         final_prompt = relight_prompt
         output_width = config.width  # Single image width.
     else:
-        # Use the 2x1 grid prompt.
         final_prompt = (
-            f"A photo of a person in a 2 by 1 grid. "
+            f"A 2x1 image grid; "
             f"On the left, {base_prompt} "
-            f"On the right, {relight_prompt}."
+            f"On the right, the same person {relight_prompt}."
         )
-        if config.final_prompt_2:
-            print("Using alternate final prompt.")
-            final_prompt = (
-                f"A 2x1 image grid; "
-                f"On the left, {base_prompt} "
-                f"On the right, the same person {relight_prompt}."
-            )
         output_width = config.width * 2  # Grid: double the width.
 
     if "outpaint" in config.depth_mode and not config.save_depth_maps:
@@ -274,9 +228,6 @@ def process_subfolder_inference(subfolder_path, config, pipe_inference, prompts)
     # Load or compute the depth map.
     depth_map_2x1 = load_depth_map(subfolder_path, config, relight_id)
 
-    # Decide on image dimensions.
-    if config.match_source_resolution:
-        raise NotImplementedError("match_source_resolution is not implemented yet.")
 
     # Run inference (T2I).
     image = pipe_inference(
@@ -292,8 +243,6 @@ def process_subfolder_inference(subfolder_path, config, pipe_inference, prompts)
         generator=torch.Generator("cpu").manual_seed(config.seed),
     ).images[0]
 
-    if config.resize_generated:
-        raise NotImplementedError("resize_generated is not implemented yet.")
 
     # Save the final concatenated result.
     output_dir_final = os.path.join("outputs", config.output_dir, relight_id)
