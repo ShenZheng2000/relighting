@@ -98,3 +98,11 @@ def walk_and_evaluate(root, prompt_desc):
 
 # Run it
 walk_and_evaluate(os.path.join(root_dir, relight_type), prompt_description)
+
+
+# The template we use for chatgpt to annotate each image. 
+# TEMPLATE = (
+#     'Describe the person in the image using this exact format: '
+#     'Woman/Man, <pose>, wearing <top description>, paired with <bottom description if any>, '
+#     '<accessories if any>, <hair>, <expression if visible>, background of <scene and lighting>. '
+# )
