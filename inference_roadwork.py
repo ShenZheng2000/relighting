@@ -42,7 +42,6 @@ from utils import (
     concat_images_side_by_side,
     parse_arguments,
     load_config,
-    resize_mask_to_canvas,
     resolve_flat_paths,
     tile_2x1_pil,
     center_crop_pil

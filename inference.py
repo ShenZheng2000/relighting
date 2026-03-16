@@ -27,11 +27,8 @@ from utils import (
     load_config,
     load_depth_map,
     prepare_canvas_and_mask,
-    process_body_mask,
     extract_background,
-    extract_foreground,
     process_depth_map,
-    resize_mask_to_canvas,
     resolve_flat_paths,
     apply_background_override
 )
@@ -175,18 +172,6 @@ def process_subfolder_inference(subfolder_path, config, pipe_inference, prompts)
     Processes a subfolder by running T2I inference.
     The final output is a concatenated image saved in the outputs directory.
     """
-    # # Load the source image and annotation.
-    # annotation_files = glob.glob(os.path.join(subfolder_path, "*.txt"))
-    # image_files = glob.glob(os.path.join(subfolder_path, "bdy_*"))
-    
-    # if len(annotation_files) == 0 or len(image_files) == 0:
-    #     print(f"Skipping inference for {subfolder_path} due to missing annotation/image.")
-    #     return
-
-    # annotation_path = annotation_files[0]
-    # source_image_path = image_files[0]
-
-
     # Flat layout: subfolder_path is actually a stem like "00000_00"
     stem = subfolder_path
     source_image_path, annotation_path, _ = resolve_flat_paths(config, stem)

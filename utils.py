@@ -127,12 +127,6 @@ def extract_background(prompt: str) -> str:
         return prompt[index:]
     return ""
 
-def extract_foreground(prompt: str) -> str:
-    index = prompt.lower().find("background")
-    if index != -1:
-        return prompt[:index].strip(",. ")
-    return prompt.strip(",. ")
-
 
 def process_depth_map(input_path, output_path, depth_model, use_v2=False):
     """
@@ -155,27 +149,6 @@ def process_depth_map(input_path, output_path, depth_model, use_v2=False):
     depth_map.save(output_path)
     print(f"Saved depth map to {output_path}")
 
-
-def process_body_mask(input_path, black_mask_output_path):
-    """
-    Convert an RGBA image to a black foreground mask.
-    Foreground will be black (0), background white (255).
-
-    Args:
-        input_path (str): Path to the input RGBA body mask.
-        black_mask_output_path (str): Path to save the black foreground mask.
-
-    Returns:
-        str: Path to the saved black foreground mask.
-    """
-    img = Image.open(input_path).convert("RGBA")
-    alpha_channel = np.array(img)[:, :, 3]
-
-    black_fg_mask = np.where(alpha_channel > 0, 0, 255).astype(np.uint8)
-    Image.fromarray(black_fg_mask).save(black_mask_output_path)
-
-    print(f"Saved black foreground mask: {black_mask_output_path}")
-    return black_mask_output_path
 
 def prepare_canvas_and_mask(image, target_width, target_height, apply_fg_mask=False, body_mask=None, crop_to_foreground=False, upper_crop=False):
     '''
@@ -221,24 +194,6 @@ def prepare_canvas_and_mask(image, target_width, target_height, apply_fg_mask=Fa
         draw.rectangle((x_offset, y_offset, x_offset + new_w, y_offset + new_h), fill=0)
 
     return canvas, mask_canvas, scale, x_offset, y_offset
-
-
-def resize_mask_to_canvas(mask, target_width, target_height):
-    # Get original size
-    orig_w, orig_h = mask.size
-    # Compute scale preserving aspect ratio
-    # scale = min(target_width / orig_w, target_height / orig_h, 1.0)
-    scale = min(target_width / orig_w, target_height / orig_h)
-    new_w, new_h = int(orig_w * scale), int(orig_h * scale)
-    # Resize the mask using NEAREST (to preserve binary values)
-    resized_mask = mask.resize((new_w, new_h), Image.NEAREST)
-    # Create a blank canvas of target size (fill with white, assuming white is background)
-    canvas = Image.new("L", (target_width, target_height), color=255)
-    # Center the resized mask onto the canvas
-    x_offset = (target_width - new_w) // 2
-    y_offset = (target_height - new_h) // 2
-    canvas.paste(resized_mask, (x_offset, y_offset))
-    return canvas
 
 
 def resolve_flat_paths(config, stem):
