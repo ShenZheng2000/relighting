@@ -1,16 +1,3 @@
-# TODO: further simplify the inference code!
-# TODO: write a nice README for it!
-
-# NOTE: this is the NEW inference version based on this format.
-# $dataset_name/
-# ├── caption/
-# │   ├── 00000_00.txt
-# ├── fg_masks/
-# │   ├── 00000_00.png
-# ├── image/
-# │   ├── 00000_00.jpg
-# └── ...
-
 import os
 import torch
 from PIL import Image

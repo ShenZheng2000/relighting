@@ -1,89 +1,69 @@
-
-
 # Introduction
+We consider two tasks: **human relighting** and **driving scene relighting**, which share a similar generation pipeline but differ in how depth is obtained.
 
-**Flux Outpainting**  
-We use the FLUX Fill pipeline to outpaint each source image twice: once using the base prompt (from dataset annotations) and once using a relighting prompt (e.g., golden_sunlight_1). This reshapes the image to the desired resolution and adds rich background context for the relit version.
+**Flux Outpainting**
 
-**Depth Estimation**  
-We then run depth estimation on both outpainted images to obtain depth maps for the base and relit views.
+For human relighting ONLY, we use `FLUX.1-Fill-dev` to outpaint each source image twice: once with a base prompt (from dataset annotations or generated prompts) and once with a relighting prompt. This expands the image to the target resolution (e.g., 784×784) and introduces rich background context.
+
+**Depth Estimation**
+
+For human relighting, depth maps are computed from the outpainted images.
+
+For driving scenes, depth is directly estimated from the input image without outpainting.
 
 **Flux 2x1 Generation**
 
-Next, we use the FLUX Control pipeline with the paired depth maps as control input. Using a 2×1 grid prompt, we generate two side-by-side images: the left shows the person under base lighting, and the right shows the same person with the same pose and clothing under the relighting prompt.
+We use `FLUX.1-Depth-dev` with depth as control input to generate a 2×1 image grid. The left image corresponds to the base lighting, and the right image shows the same subject or scene under the target relighting condition, while preserving structure and content.
 
 **(Optional) GPT Image Filtering**
 
-We use the ChatGPT API to filter out low-quality images before training.
-
-**Image Warping on Detected Face Regions**
-
-We detect facial and eye regions and apply saliency-guided warping to enlarge them, increasing effective resolution and enabling finer details to be represented and reconstructed in the latent space.
-
-**Image-to-Image Model Training**  
-Finally, we train an image-to-image translation model (e.g., Pix2Pix-Turbo) on the synthesized pairs to distill the relighting behavior into a lightweight, fast-inference network.
+We use the ChatGPT API to filter out low-quality images before training. 
 
 
 # Run FLUX to Generate Base–Relit Image Pairs
 
-
-## 1. Install Environment
+## 1. Environment Setup
 
 ```
-cd $HOME && git clone https://github.com/black-forest-labs/flux
-cd $HOME/flux
-python3.10 -m venv .venv
-source .venv/bin/activate
-pip install -e ".[all]"
+conda create -n flux_diffusers python=3.10 -y
+conda activate flux_diffusers
+pip install torch==2.6.0 torchvision==0.21.0 torchaudio==2.6.0 --index-url https://download.pytorch.org/whl/cu124
+pip install -U diffusers
+pip install git+https://github.com/asomoza/image_gen_aux.git
 ```
 
-## 2. Run Grounded SAM 2 to get body mask
+## 2. Grounded SAM 2 Body Mask Generation
 
-Clone this repo: https://github.com/ShenZheng2000/Grounded-SAM-2
+**Note:** This step is only required for **human relighting**.
 
-Install the env based on the instruction, setup path, and run `run.py`, setting `--input-dir` to be the input dataset folder like `dataset_with_garment`.
+Clone the forked repository:  
+https://github.com/ShenZheng2000/Grounded-SAM-2
+
+Follow the installation instructions in the repo to set up the environment and paths.  
+Then run `run.py`, setting `--input-dir` to your dataset directory
 
 
-## 3. Specify relighting prompt
-Edit `utils.py` and modify or add entries in `relighting_prompt_?`. 
+## 3. Specify Relighting Prompts
+Edit `utils.py` to define or modify relighting prompts.
 
 For example:
 
 ```
 relighting_prompts_6 = {
-    "noon_sunlight_1": "Relit with bright noon sunlight in a clear outdoor setting, casting soft natural shadows and surrounding the subject in crisp white light to create a clean, vibrant daytime mood."
+    "noon_sunlight_1": "Relit with bright noon sunlight in a clear outdoor setting, casting soft natural shadows and surrounding the subject in crisp white light to create a clean, vibrant daytime mood.",
     "golden_sunlight_1": "Relit with warm golden sunlight during the late afternoon, casting gentle directional shadows and surrounding the subject in soft amber tones to create a calm, radiant mood.",
-    # add more as needed.
+    "foggy_1": "Relit with dense fog in a muted outdoor setting, casting soft diffused shadows and surrounding the subject in pale gray light to create a quiet, atmospheric mood.",
+    "moonlight_1": "Relit with cold moonlight in a minimalist nighttime scene, casting crisp soft shadows and bathing the subject in icy blue highlights to create a tranquil, distant mood.",
+    # add more if needed
 }
 ```
 
 
-## 4. Prepare dataset
-In `configs/base.yaml`, set `input_dir` to your dataset path. 
-Example:
-```
-input_dir: /home/shenzhen/Datasets/dataset_with_garment_bigface_100
-```
 
-You can use `shen_scripts/bigface_100.txt` to get these 100 images
+## 4. Prepare Dataset
+In the YAML config file, set `input_dir` to your dataset path.
 
-Expected dataset folder structure (LEGACY / SpreeAI-style):
-```
-dataset_with_garment_bigface_100/
-├── 8seconds_men_shirts_034/
-│   ├── pre_processing/
-│       ├── black_fg_mask_groundedsam2.png
-│   ├── bdy_2.jpg
-│   └── gar_0.jpg
-│   └── gpt_annotation__bdy_2.txt
-├── 09WOMEN_WOMEN_BLOUSE_167/
-├── 09WOMEN_WOMEN_PANTS_418/
-├── Adidas_R2_Men_Jackets_216/
-└── Adsb_Women_Skirts_008/
-└── ...
-```
-
-Expected dataset folder structure (NEW / flat-style):
+Expected dataset structure:
 ```
 $dataset_name/
 ├── caption/
@@ -96,49 +76,18 @@ $dataset_name/
 ```
 
 
-## 5. Prepare Config
-In your experiment config (e.g., `configs/exp_10_16.yaml`):
-* Set `prompt_version` (default: 6)
-* Set `max_images` (2 for quick debugging, null for full experiments)
-* Set `upper_crop` (default: true. recommended for warping experiments: false)
+## 5. Run inference & Prepare train-test splits
 
+See `inf.sh` for example commands.
 
-## 6. Run inference 
+Make sure to specify `inference_mode` in the YAML config file:
+- `inference_mode: human` → outpainting + T2I
+- `inference_mode: driving` → T2I
 
-For example, to run relighting using `golden_sunlight_1` across 10 GPUs, each running 1 seeds:
-
-Run in terminal (LEGACY / SpreeAI-style):
-```
-python inference.py --base_config configs/base_10_2.yaml --exp_config configs/exp_10_16.yaml --relight_type golden_sunlight_1 --gpu 0 --seed_offset 0 --num_seeds 1
-```
-
-OR, Run in terminal (NEW / flat-style):
-```
-python inference_spreeai.py --base_config configs/base_10_2.yaml --exp_config configs/exp_10_16.yaml --relight_type golden_sunlight_1 --gpu 0 --seed_offset 0 --num_seeds 1
-```
-
-All images will be saved in `outputs/`
-
-
-
-## 7. Prepare Dataset in Pix2Pix-Turbo's Format
-
-
-Run the following command in the terminal 
-
-NOTE: same config as above, but please update `root_dir` and `output_dir` in `prepare_data.py`
-```
-python prepare_data.py --base_config configs/base_10_2.yaml --exp_config configs/exp_10_16.yaml --relight_type golden_sunlight_1 --gpu 0
-```
-
-The script above will:
-* Format images into the structure required by Pix2Pix-Turbo
-* Automatically split the dataset into train/test sets
-* Skip any images listed in `invalid.txt` or `skip_list` (you can modify or remove these files if needed)
 
 ### Example Dataset Structure
 ```
-/home/shenzhen/Datasets/relighting/exp_10_16/golden_sunlight_1
+/home/shenzhen/Datasets/relighting/exp_1_10_1/golden_sunlight_1
 ├── train_A
 │ ├── 0.png
 │ ├── 1.png
@@ -162,7 +111,7 @@ The script above will:
 
 
 <details>
-<summary><strong> (Optional, ) Filter out bad images using GPT-API</strong></summary>
+<summary><strong> (Optional) Filter Out Bad Images Using GPT API</strong></summary>
 
 Install the OpenAI client: 
 ```
@@ -176,102 +125,11 @@ Edit the script: `shen_scripts/gpt_api_decide.py`
     client = openai.OpenAI(api_key="xxx")
     ```
 
-* Set your root directory. For example: 
+* Set your root directory and relight type. For example: 
     ```
-    root_dir = "/home/shenzhen/Relight_Projects/relighting/outputs"
+    root_dir = "/home/shenzhen/Relight_Projects/relighting/outputs/exp_1_10_1_seed0"
+    relight_type = "golden_sunlight_1"
     ```
 
 Run the script. For each subfolder with images, a corresponding `invalid.txt` will be generated listing the filtered-out images.
 </details>
-
-
-
-
-
-# Train Pix2Pix-Turbo with Synthesized Images
-
-
-## 1. Setup Repo and Install Env
-```
-git clone https://github.com/ShenZheng2000/img2img-turbo
-cd img2img-turbo
-conda env create -f environment.yaml
-conda activate img2img-turbo
-
-pip install huggingface_hub==0.25.0
-pip install peft==0.10.0
-pip install wandb
-pip install vision_aided_loss
-
-pip install insightface==0.7.3
-pip install opencv-python pillow
-pip install numpy==1.26.4
-pip install onnxruntime-gpu==1.17.1
-```
-
-
-## 2. Image Warping on Detected Face Regions
-
-Run the following commands inside the `img2img-turbo` repository.
-
-NOTE: A bandwidth (`--bw`) of 128 is recommended, and using `--include-eyes` improves face and eye detail quality.
-
-Run in terminal:
-```
-python warp_dataset.py \
-    --input_root /home/shenzhen/Datasets/relighting \
-    --target_prefix exp_10_16 \
-    --relight_type golden_sunlight_1 \
-    --bw 128 \
-    --include-eyes
-```
-
-### Example Dataset Structure (Warped Images)
-```
-/home/shenzhen/Datasets/relighting/exp_10_16_warped_128/golden_sunlight_1
-├── train_A
-│ ├── 0.png
-│ ├── 0.inv.pth
-│ ├── 1.png
-│ ├── 1.inv.pth
-│ └── ...
-├── train_B
-│ ├── 0.png
-│ ├── 0.inv.pth
-│ ├── 1.png
-│ ├── 1.inv.pth
-│ └── ...
-├── test_A
-│ ├── 0.png
-│ ├── 0.inv.pth
-│ ├── 1.png
-│ ├── 1.inv.pth
-│ └── ...
-├── test_B
-│ ├── 0.png
-│ ├── 0.inv.pth
-│ ├── 1.png
-│ ├── 1.inv.pth
-│ └── ...
-├── train_prompts.json
-└── test_prompts.json
-```
-
-
-## 3. Model Training 
-
-For training details, see the [official guide](https://github.com/GaParmar/img2img-turbo/blob/main/docs/training_pix2pix_turbo.md)
-
-Example training with 4 GPUs, each at least having 48GB of memory
-
-Run in terminal
-```
-bash run.sh
-```
-
-## 4. Model Testing
-
-Example testing with 1 GPU
-```
-bash test2.sh
-```
