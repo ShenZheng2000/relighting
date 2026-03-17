@@ -128,7 +128,7 @@ def extract_background(prompt: str) -> str:
     return ""
 
 
-def process_depth_map(input_path, output_path, depth_model, use_v2=False):
+def process_depth_map(input_path, output_path, depth_model):
     """
     Process an image to generate its depth map using the provided depth model.
     
@@ -139,13 +139,10 @@ def process_depth_map(input_path, output_path, depth_model, use_v2=False):
         use_v2 (bool): Flag indicating if the new pipeline is used.
     """
     image = Image.open(input_path).convert("RGB")
-    
-    if use_v2:
-        depth_map = depth_model(image)["depth"]
-    else:
-        control_image = load_image(input_path)
-        depth_map = depth_model(control_image)[0].convert("RGB")
-    
+
+    control_image = load_image(input_path)
+    depth_map = depth_model(control_image)[0].convert("RGB")
+
     depth_map.save(output_path)
     print(f"Saved depth map to {output_path}")
 

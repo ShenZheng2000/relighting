@@ -14,13 +14,13 @@ cfg_outpaint: 30
 num_inference_steps: 50
 extract_bg_from_base_prompt: true
 save_depth_maps: true
-use_depthanythingv2: false
 crop_to_foreground: true # crop_to_foreground: false
-upper_crop: true # upper_crop: false
+upper_crop: false
 
 # Others
 relight_image_only: false
-prompt_version: 6 # prompt_version: 1
+prompt_version: 6
+inference_mode: human
 
 # Set to a non-empty string to override background description
 background_override_text: "" 

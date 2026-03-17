@@ -3,12 +3,10 @@ input_dir: "/ssd0/shenzhen/Datasets/depth/workzone_segm/pittsburgh"
 # T2I Parameters
 cfg: 10
 
-# NOTE: no need, but let's keep these, or set to false 
-# depth_mode: outpaint # depth_mode: raw
-upper_crop: false
-
 # NOTE: set this to true!
 center_crop: true
 
+inference_mode: driving
+
 # Debugging
-max_images: null  # Set to a number for debugging, otherwise leave null if unlimited
+max_images: 1  # Set to a number for debugging, otherwise leave null if unlimited
