@@ -20,9 +20,9 @@ We use `FLUX.1-Depth-dev` with depth as control input to generate a 2×1 image g
 We use the ChatGPT API to filter out low-quality images before training. 
 
 
-# Run FLUX to Generate Base–Relit Image Pairs
+# 🌟 Run FLUX to Generate Base–Relit Image Pairs
 
-## 1. Environment Setup
+## ⚙️ 1. Environment Setup
 
 ```
 conda create -n flux_diffusers python=3.10 -y
@@ -32,14 +32,14 @@ pip install -U diffusers
 pip install git+https://github.com/asomoza/image_gen_aux.git
 ```
 
-## 2. Download Dataset
+## 📥 2. Download Dataset
 
 For our human relighting data generation pipeline, you only need 100 images with GPT-4o generated caption and Grounded SAM2-generated fg masks from VITON-HD. Please download them from [here](https://drive.google.com/drive/folders/1LIVq0SKuvAoJwTvFzFoHXrt-bgaxAFoI?usp=drive_link).
 
 Similarly, for roadwork, please download the images used in the data generation pipeline from [here](https://drive.google.com/file/d/1vpwWWIM7QSqYe3LveqC1DnRt2FNoJvNI/view?usp=drive_link).
 
 
-## 3. Specify Relighting Prompts
+## ✍️ 3. Specify Relighting Prompts
 
 Edit `utils.py` to define or modify relighting prompts.
 
@@ -56,7 +56,7 @@ relighting_prompts_6 = {
 ```
 
 
-## 4. Prepare Dataset
+## 🗂️ 4. Prepare Dataset
 
 In the YAML config file, set `input_dir` to your dataset path.
 
@@ -73,7 +73,7 @@ $dataset_name/
 ```
 
 
-## 5. Run inference & Prepare train-test splits
+## 🚀 5. Run inference & Prepare train-test splits
 
 See `inf.sh` for example commands.
 
