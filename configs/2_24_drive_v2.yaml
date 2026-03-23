@@ -1,4 +1,4 @@
-input_dir: "/ssd0/shenzhen/Datasets/depth/workzone_segm/pittsburgh"
+input_dir: "/ssd0/shenzhen/Datasets/relighting/workzone_segm/pittsburgh"
 
 # T2I Parameters
 cfg: 10

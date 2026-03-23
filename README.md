@@ -34,22 +34,12 @@ pip install git+https://github.com/asomoza/image_gen_aux.git
 
 ## 2. Download Dataset
 
-Download **VITON-HD** dataset from [here](https://drive.google.com/file/d/1tLx8LRp-sxDp0EcYmYoV_vXdSc-jJ79w/view) and **ROADWork** dataset from [here](https://kilthub.cmu.edu/articles/dataset/ROADWork_Data/26093197)
+For our human relighting data generation pipeline, you only need 100 images with GPT-4o generated caption and Grounded SAM2-generated fg masks from VITON-HD. Please download them from [here](https://drive.google.com/drive/folders/1LIVq0SKuvAoJwTvFzFoHXrt-bgaxAFoI?usp=drive_link).
+
+Similarly, for roadwork, please download the images used in the data generation pipeline from [here](https://drive.google.com/file/d/1vpwWWIM7QSqYe3LveqC1DnRt2FNoJvNI/view?usp=drive_link).
 
 
-
-## 3. Grounded SAM 2 Body Mask Generation
-
-**Note:** This step is only required for **human relighting**.
-
-Clone the forked repository:  
-https://github.com/ShenZheng2000/Grounded-SAM-2
-
-Follow the installation instructions in the repo to set up the environment and paths.  
-Then run `run.py`, setting `--input-dir` to your dataset directory
-
-
-## 4. Specify Relighting Prompts
+## 3. Specify Relighting Prompts
 
 Edit `utils.py` to define or modify relighting prompts.
 
@@ -66,8 +56,7 @@ relighting_prompts_6 = {
 ```
 
 
-
-## 5. Prepare Dataset
+## 4. Prepare Dataset
 
 In the YAML config file, set `input_dir` to your dataset path.
 
@@ -84,7 +73,7 @@ $dataset_name/
 ```
 
 
-## 6. Run inference & Prepare train-test splits
+## 5. Run inference & Prepare train-test splits
 
 See `inf.sh` for example commands.
 
