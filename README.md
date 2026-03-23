@@ -61,6 +61,9 @@ relighting_prompts_6 = {
 
 
 ## 4. Prepare Dataset
+
+Download **VITON-HD** dataset from [here](https://drive.google.com/file/d/1tLx8LRp-sxDp0EcYmYoV_vXdSc-jJ79w/view) and **ROADWork** dataset from [here](https://kilthub.cmu.edu/articles/dataset/ROADWork_Data/26093197)
+
 In the YAML config file, set `input_dir` to your dataset path.
 
 Expected dataset structure:
